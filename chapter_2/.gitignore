@@ -1,0 +1,21 @@
+# Go
+backend/tmp/
+backend/bin/
+
+# Python
+data-service/__pycache__/
+data-service/.venv/
+data-service/*.egg-info/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Environment
+.env
+.env.local
