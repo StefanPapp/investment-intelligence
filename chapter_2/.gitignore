@@ -3,7 +3,8 @@ backend/tmp/
 backend/bin/
 
 # Python
-data-service/__pycache__/
+__pycache__/
+*.pyc
 data-service/.venv/
 data-service/*.egg-info/
 
