@@ -1,0 +1,29 @@
+{
+    "permissions": {
+      "allow": [
+        "Bash(go version:*)",
+        "Bash(git:*)",
+        "Bash(docker compose:*)",
+        "Bash(uv sync:*)",
+        "Bash(uv run:*)",
+        "Bash(go mod:*)",
+        "Bash(go get:*)",
+        "Bash(go test:*)",
+        "Bash(go build:*)",
+        "Bash(uv lock:*)",
+        "Bash(docker build:*)",
+        "Bash(docker run:*)",
+        "Bash(curl:*)",
+        "Bash(docker stop:*)",
+        "Bash(go vet:*)",
+        "Bash(docker manifest:*)",
+        "Bash(echo EXIT: $?:*)",
+        "Bash(npx create-next-app@latest:*)",
+        "Bash(yes:*)",
+        "Bash(npm run:*)",
+        "Bash(rm:*)",
+        "Bash(docker image:*)"
+      ]
+    }
+  }
+  

@@ -1,0 +1,20 @@
+{
+  "split_adjustment": {
+    "sample_input": {
+      "pre_split_price": 200,
+      "split_ratio": 2
+    },
+    "expected_output": {
+      "adjusted_price": 100
+    }
+  },
+  "duplicate_row_check": {
+    "sample_input": {
+      "rows_before": 101,
+      "duplicates_removed": 1
+    },
+    "expected_output": {
+      "rows_after": 100
+    }
+  }
+}

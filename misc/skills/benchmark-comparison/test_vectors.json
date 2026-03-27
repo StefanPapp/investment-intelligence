@@ -1,0 +1,9 @@
+{
+  "relative_return": {
+    "sample_input": {
+      "portfolio": 0.15,
+      "benchmark": 0.1
+    },
+    "expected_output": 0.05
+  }
+}

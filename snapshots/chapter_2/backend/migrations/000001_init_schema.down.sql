@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS prices_cache;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS stocks;

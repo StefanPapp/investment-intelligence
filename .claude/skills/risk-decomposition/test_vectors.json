@@ -1,0 +1,10 @@
+{
+  "single_name_concentration": {
+    "sample_input": {
+      "largest_position_weight": 0.22
+    },
+    "expected_output": {
+      "warning": "High single-name concentration"
+    }
+  }
+}

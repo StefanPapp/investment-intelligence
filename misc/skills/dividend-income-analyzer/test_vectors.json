@@ -1,0 +1,9 @@
+{
+  "yield_on_cost": {
+    "sample_input": {
+      "annual_dividend": 4.0,
+      "cost_basis_per_share": 50
+    },
+    "expected_output": 0.08
+  }
+}

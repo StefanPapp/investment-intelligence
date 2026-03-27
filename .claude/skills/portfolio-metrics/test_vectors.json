@@ -1,0 +1,31 @@
+{
+  "cumulative_return": {
+    "formula": "(ending_value - starting_value + net_cash_flows_adjustment) / starting_value",
+    "sample_input": {
+      "starting_value": 100000,
+      "ending_value": 112000
+    },
+    "expected_output": 0.12
+  },
+  "sharpe_ratio": {
+    "formula": "(annualized_return - risk_free_rate) / annualized_volatility",
+    "sample_input": {
+      "annualized_return": 0.12,
+      "risk_free_rate": 0.03,
+      "annualized_volatility": 0.18
+    },
+    "expected_output": 0.5
+  },
+  "max_drawdown": {
+    "formula": "min((value_t - running_peak_t) / running_peak_t)",
+    "sample_input": {
+      "series": [
+        100,
+        120,
+        90,
+        95
+      ]
+    },
+    "expected_output": -0.25
+  }
+}

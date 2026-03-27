@@ -1,0 +1,10 @@
+{
+  "style_check": {
+    "sample_input": {
+      "contains_unverified_causal_claim": true
+    },
+    "expected_output": {
+      "status": "reject"
+    }
+  }
+}

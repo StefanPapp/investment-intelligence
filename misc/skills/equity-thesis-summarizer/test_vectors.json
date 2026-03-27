@@ -1,0 +1,12 @@
+{
+  "structure_check": {
+    "sample_input": {
+      "has_bull": true,
+      "has_bear": true,
+      "has_risks": true
+    },
+    "expected_output": {
+      "status": "ok"
+    }
+  }
+}

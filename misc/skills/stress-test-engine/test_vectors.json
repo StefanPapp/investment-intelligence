@@ -1,0 +1,11 @@
+{
+  "equity_crash": {
+    "sample_input": {
+      "equity_value": 50000,
+      "shock": -0.2
+    },
+    "expected_output": {
+      "loss": -10000
+    }
+  }
+}

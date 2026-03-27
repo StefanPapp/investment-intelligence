@@ -1,0 +1,47 @@
+{
+  "weighted_average_buy": {
+    "sample_input": [
+      {
+        "qty": 10,
+        "price": 100,
+        "fee": 5
+      },
+      {
+        "qty": 10,
+        "price": 120,
+        "fee": 5
+      }
+    ],
+    "expected_output": {
+      "total_qty": 20,
+      "basis_total": 2210,
+      "average_cost": 110.5
+    }
+  },
+  "fifo_partial_sell": {
+    "sample_input": [
+      {
+        "buy_qty": 10,
+        "buy_price": 100
+      },
+      {
+        "buy_qty": 10,
+        "buy_price": 120
+      },
+      {
+        "sell_qty": 12,
+        "sell_price": 130,
+        "sell_fee": 6
+      }
+    ],
+    "expected_output": {
+      "realized_gain": 248.0,
+      "remaining_lots": [
+        {
+          "qty": 8,
+          "price": 120
+        }
+      ]
+    }
+  }
+}

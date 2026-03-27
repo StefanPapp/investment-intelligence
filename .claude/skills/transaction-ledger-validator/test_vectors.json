@@ -1,0 +1,20 @@
+{
+  "duplicate_detection": {
+    "sample_input": {
+      "rows": 3,
+      "duplicate_keys_found": 1
+    },
+    "expected_output": {
+      "status": "warning"
+    }
+  },
+  "negative_inventory": {
+    "sample_input": {
+      "sell_qty": 15,
+      "available_qty": 10
+    },
+    "expected_output": {
+      "status": "error"
+    }
+  }
+}

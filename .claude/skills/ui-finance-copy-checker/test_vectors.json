@@ -1,0 +1,12 @@
+{
+  "term_check": {
+    "sample_input": {
+      "label": "Annual Return",
+      "definition": "return since inception"
+    },
+    "expected_output": {
+      "status": "error",
+      "reason": "term_mismatch"
+    }
+  }
+}

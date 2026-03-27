@@ -1,0 +1,21 @@
+{
+  "conversion": {
+    "sample_input": {
+      "value_local": 1000,
+      "fx_rate": 1.1,
+      "quote_convention": "EURUSD"
+    },
+    "expected_output": {
+      "value_usd": 1100
+    }
+  },
+  "fx_attribution": {
+    "sample_input": {
+      "asset_return_local": 0.1,
+      "fx_return": 0.05
+    },
+    "expected_output": {
+      "combined_return": 0.155
+    }
+  }
+}

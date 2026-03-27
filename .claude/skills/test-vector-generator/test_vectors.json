@@ -1,0 +1,10 @@
+{
+  "coverage_example": {
+    "sample_input": {
+      "cases_requested": 5
+    },
+    "expected_output": {
+      "minimum_cases_returned": 5
+    }
+  }
+}

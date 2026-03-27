@@ -1,0 +1,13 @@
+{
+  "template_check": {
+    "sample_input": {
+      "has_formula": true,
+      "has_units": true,
+      "has_test_vector": false
+    },
+    "expected_output": {
+      "status": "reject",
+      "reason": "missing_test_vector"
+    }
+  }
+}
