@@ -15,6 +15,7 @@ type PortfolioService struct {
 	PortfolioRepo  *repository.PortfolioRepo
 	PriceCacheRepo *repository.PriceCacheRepo
 	DataClient     *client.DataServiceClient
+	HistoryCache   *HistoryCache
 }
 
 func (s *PortfolioService) GetPortfolio() (*model.Portfolio, error) {
@@ -65,6 +66,25 @@ func (s *PortfolioService) GetPrice(ticker string) (*model.PriceCache, error) {
 	}
 
 	return price, nil
+}
+
+func (s *PortfolioService) GetPriceHistory(ticker, start, end string) (*model.HistoricalPriceResponse, error) {
+	if s.HistoryCache != nil {
+		if cached, ok := s.HistoryCache.Get(ticker, start, end); ok {
+			return cached, nil
+		}
+	}
+
+	resp, err := s.DataClient.GetPriceHistory(ticker, start, end)
+	if err != nil {
+		return nil, err
+	}
+
+	if s.HistoryCache != nil {
+		s.HistoryCache.Set(ticker, start, end, resp)
+	}
+
+	return resp, nil
 }
 
 func (s *PortfolioService) fetchPrice(ticker string) float64 {
