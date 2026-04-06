@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 
 from src.models.price import HistoricalPriceResponse, PriceResponse
-from src.services.market_data import MarketDataService
+from src.services.market_data import MarketDataService, ServiceUnavailableError
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +31,13 @@ async def get_historical_prices(
             ticker.upper(), start, end
         )
         return HistoricalPriceResponse(**result)
-    except ValueError as e:
-        error_msg = str(e)
-        is_retryable = "unavailable" in error_msg.lower() or "busy" in error_msg.lower()
+    except ServiceUnavailableError as e:
         raise HTTPException(
-            status_code=503 if is_retryable else 404,
-            detail={"error": error_msg, "retryable": is_retryable},
+            status_code=503,
+            detail={"error": str(e), "retryable": True},
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": str(e), "retryable": False},
         )

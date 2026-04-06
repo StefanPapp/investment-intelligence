@@ -9,6 +9,11 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 logger = logging.getLogger(__name__)
 
 
+class ServiceUnavailableError(Exception):
+    """Raised when the upstream data provider is unavailable after retries."""
+    pass
+
+
 class MarketDataService:
     """Fetches stock prices from yfinance."""
 
@@ -66,7 +71,7 @@ class MarketDataService:
             raise
         except Exception as e:
             logger.exception("Failed to fetch history for %s", ticker)
-            raise ValueError(f"No data available for {ticker}") from e
+            raise ServiceUnavailableError(f"Data provider temporarily unavailable for {ticker}") from e
 
         if df.empty:
             raise ValueError(f"No data available for {ticker}")
