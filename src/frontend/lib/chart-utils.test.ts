@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { determineChartMode, hasVolumeData } from "./chart-utils";
 import { HistoricalPricePoint } from "./api";
 
-function makePrice(overrides: Partial<HistoricalPricePoint> = {}): HistoricalPricePoint {
+function makePrice(
+  overrides: Partial<HistoricalPricePoint> = {},
+): HistoricalPricePoint {
   return {
     date: "2025-01-01",
     open: 100,
@@ -47,10 +49,7 @@ describe("determineChartMode", () => {
   });
 
   it("returns candlestick when only some fields are null (not all three)", () => {
-    const prices = [
-      makePrice({ open: null }),
-      makePrice(),
-    ];
+    const prices = [makePrice({ open: null }), makePrice()];
     expect(determineChartMode(prices)).toBe("candlestick");
   });
 });

@@ -40,11 +40,15 @@ export function PortfolioTable({ holdings }: { holdings: Holding[] }) {
               <td className="py-3 px-2 font-medium">{h.ticker}</td>
               <td className="py-3 px-2 text-gray-600">{h.name}</td>
               <td className="py-3 px-2 text-right">{h.total_shares}</td>
-              <td className="py-3 px-2 text-right">{formatCurrency(h.avg_cost)}</td>
+              <td className="py-3 px-2 text-right">
+                {formatCurrency(h.avg_cost)}
+              </td>
               <td className="py-3 px-2 text-right">
                 {h.current_price > 0 ? formatCurrency(h.current_price) : "N/A"}
               </td>
-              <td className="py-3 px-2 text-right">{formatCurrency(h.market_value)}</td>
+              <td className="py-3 px-2 text-right">
+                {formatCurrency(h.market_value)}
+              </td>
               <td
                 className={`py-3 px-2 text-right ${
                   h.gain_loss >= 0 ? "text-green-600" : "text-red-600"
