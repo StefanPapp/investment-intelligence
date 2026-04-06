@@ -18,7 +18,11 @@ import {
   HistoricalPriceResponse,
   getHistoricalPrices,
 } from "@/lib/api";
-import { determineChartMode, hasVolumeData, ChartMode } from "@/lib/chart-utils";
+import {
+  determineChartMode,
+  hasVolumeData,
+  ChartMode,
+} from "@/lib/chart-utils";
 
 interface StockChartProps {
   holdings: Holding[];
@@ -74,29 +78,26 @@ export function StockChart({ holdings }: StockChartProps) {
   const [error, setError] = useState<string | null>(null);
   const [chartMode, setChartMode] = useState<ChartMode>("candlestick");
 
-  const fetchData = useCallback(
-    async (ticker: string, preset: RangePreset) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const start = getStartDate(preset);
-        const end = formatDate(new Date());
-        const resp = await getHistoricalPrices(ticker, start, end);
-        setData(resp);
-        setChartMode(determineChartMode(resp.prices));
-      } catch (e) {
-        setError(
-          e instanceof Error
-            ? e.message
-            : "Unable to load price data. The asset may be delisted or the data provider may be temporarily unavailable.",
-        );
-        setData(null);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const fetchData = useCallback(async (ticker: string, preset: RangePreset) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const start = getStartDate(preset);
+      const end = formatDate(new Date());
+      const resp = await getHistoricalPrices(ticker, start, end);
+      setData(resp);
+      setChartMode(determineChartMode(resp.prices));
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Unable to load price data. The asset may be delisted or the data provider may be temporarily unavailable.",
+      );
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Fetch data when ticker or preset changes
   useEffect(() => {
@@ -120,6 +121,7 @@ export function StockChart({ holdings }: StockChartProps) {
       layout: {
         background: { type: ColorType.Solid, color: "white" },
         textColor: "#374151",
+        attributionLogo: false,
       },
       width: container.clientWidth,
       height: 400,
@@ -136,7 +138,7 @@ export function StockChart({ holdings }: StockChartProps) {
       rightPriceScale: {
         borderColor: "#e5e7eb",
       },
-    });
+    } as Parameters<typeof createChart>[1]);
 
     chartRef.current = chart;
 
@@ -308,9 +310,7 @@ export function StockChart({ holdings }: StockChartProps) {
                 </span>
               )}
               {data.interval !== "daily" && (
-                <span>
-                  Showing {data.interval} data
-                </span>
+                <span>Showing {data.interval} data</span>
               )}
             </div>
           </>
