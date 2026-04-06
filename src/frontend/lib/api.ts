@@ -126,7 +126,7 @@ export async function getHistoricalPrices(
   const baseUrl =
     typeof window === "undefined"
       ? BACKEND_URL
-      : "";
+      : process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
   const res = await fetch(
     `${baseUrl}/api/prices/${ticker}/history?start=${start}&end=${end}`,
     { cache: "no-store" },
