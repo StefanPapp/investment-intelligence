@@ -10,7 +10,9 @@ export default async function PortfolioPage() {
   } catch {
     return (
       <div className="text-center py-8">
-        <p className="text-red-500">Failed to load portfolio. Is the backend running?</p>
+        <p className="text-red-500">
+          Failed to load portfolio. Is the backend running?
+        </p>
       </div>
     );
   }
@@ -23,19 +25,23 @@ export default async function PortfolioPage() {
           <div>
             <span className="text-gray-500">Total Value: </span>
             <span className="font-semibold">
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                portfolio.total_value
-              )}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(portfolio.total_value)}
             </span>
           </div>
           <div
-            className={portfolio.total_gain_loss >= 0 ? "text-green-600" : "text-red-600"}
+            className={
+              portfolio.total_gain_loss >= 0 ? "text-green-600" : "text-red-600"
+            }
           >
             <span className="text-gray-500">P&L: </span>
             <span className="font-semibold">
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                portfolio.total_gain_loss
-              )}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(portfolio.total_gain_loss)}
             </span>
           </div>
         </div>

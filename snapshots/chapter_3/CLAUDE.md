@@ -24,12 +24,14 @@ Browser → Next.js SSR (:3000) → Go Backend (:8080) → PostgreSQL (:5432)
 ## Commands
 
 ### Full stack (Docker)
+
 ```bash
 docker-compose up --build          # Start all services
 docker-compose down -v             # Stop and remove volumes
 ```
 
 ### Go Backend (`backend/`)
+
 ```bash
 cd backend
 go build ./...                     # Build
@@ -39,6 +41,7 @@ DATABASE_URL=... DATA_SERVICE_URL=... go run ./cmd/server/  # Run locally
 ```
 
 ### Python Data Service (`data-service/`)
+
 ```bash
 cd data-service
 uv sync                            # Install dependencies
@@ -46,9 +49,11 @@ uv run pytest tests/ -v            # Run all tests
 uv run pytest tests/test_prices.py # Run single test file
 uv run uvicorn src.main:app --port 8000  # Run locally
 ```
+
 pytest is configured with `asyncio_mode = "auto"` in pyproject.toml.
 
 ### Next.js Frontend (`frontend/`)
+
 ```bash
 cd frontend
 npm ci                             # Install dependencies
@@ -60,6 +65,7 @@ npm run lint                       # ESLint
 ## Key Patterns
 
 ### Go Backend (Chi router)
+
 - Layered architecture: `handler/` → `service/` → `repository/` + `client/`
 - `handler/` decodes HTTP, calls service, encodes JSON response
 - `service/` contains business logic (e.g., auto-creates stock on first transaction)
@@ -68,12 +74,14 @@ npm run lint                       # ESLint
 - Tests use `*_test.go` files co-located with source; repository tests use a shared test helper
 
 ### Python Data Service (FastAPI)
+
 - `src/main.py` → mounts router from `src/routers/prices.py`
 - `src/services/market_data.py` → `MarketDataService` wraps yfinance calls
 - `src/models/price.py` → Pydantic models for API responses
 - Tests use `httpx.AsyncClient` with FastAPI's `TestClient`
 
 ### Next.js Frontend (App Router)
+
 - Server Components by default; `"use client"` only where needed
 - `app/actions/transactions.ts` — Server Actions for create/edit/delete (calls `lib/api.ts`)
 - `lib/api.ts` — typed fetch wrapper using `BACKEND_URL` env var
@@ -99,11 +107,11 @@ GET    /api/prices/{ticker}        # Current price (cached or fresh)
 
 ## Environment Variables
 
-| Service | Variable | Default |
-|---------|----------|---------|
-| Backend | `DATABASE_URL` | required |
-| Backend | `DATA_SERVICE_URL` | required |
-| Backend | `PORT` | `8080` |
-| Frontend | `BACKEND_URL` | `http://localhost:8080` |
+| Service  | Variable           | Default                 |
+| -------- | ------------------ | ----------------------- |
+| Backend  | `DATABASE_URL`     | required                |
+| Backend  | `DATA_SERVICE_URL` | required                |
+| Backend  | `PORT`             | `8080`                  |
+| Frontend | `BACKEND_URL`      | `http://localhost:8080` |
 
 Docker Compose sets these automatically for inter-container communication.

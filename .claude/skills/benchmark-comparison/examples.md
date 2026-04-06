@@ -11,4 +11,3 @@ Compare my portfolio against SPY over the last 3 years and explain the periods o
 ```text
 Compute upside and downside capture versus ACWI.
 ```
-

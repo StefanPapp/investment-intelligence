@@ -4,11 +4,13 @@ description: Clean and standardize raw market data including splits, dividends, 
 ---
 
 ## When to use
+
 - Ingesting data from yfinance or broker APIs
 - Need canonical adjusted series
 - Preparing data for analytics or charting
 
 ## Inputs required
+
 - raw provider payloads
 - ticker metadata
 - price series
@@ -16,16 +18,19 @@ description: Clean and standardize raw market data including splits, dividends, 
 - timezone info
 
 ## Rules
+
 - Preserve original raw fields for auditability
 - Document whether adjusted close or custom adjustments are used
 - Validate monotonic dates and remove exact duplicate rows
 
 ## Output format
+
 - canonical asset object
 - adjusted series
 - validation report
 
 ## Edge cases
+
 - missing business days
 - duplicate rows
 - bad timezones
@@ -33,6 +38,7 @@ description: Clean and standardize raw market data including splits, dividends, 
 - survivorship issues
 
 ## Validation checklist
+
 - confirm input completeness
 - verify units and currency conventions
 - state assumptions explicitly

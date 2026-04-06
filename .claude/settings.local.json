@@ -22,7 +22,22 @@
       "Bash(yes:*)",
       "Bash(npm run:*)",
       "Bash(rm:*)",
-      "Bash(docker image:*)"
+      "Bash(docker image:*)",
+      "Bash(find /Users/stefanpapp/src/cc/manning/investment-intelligence/src/frontend -name .env* -o -name *.env*)",
+      "Bash(grep -r \"historical\\\\|chart\\\\|timeseries\" /Users/stefanpapp/src/cc/manning/investment-intelligence/src/backend --include=*.go)",
+      "Bash(uv add:*)",
+      "Bash(VIRTUAL_ENV=\"\" uv sync --project /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service 2>&1)",
+      "Bash(VIRTUAL_ENV=\"\" /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service/.venv/bin/python -m pytest tests/test_historical_prices.py -v)",
+      "Bash(VIRTUAL_ENV=\"\" uv sync --project /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service --all-extras 2>&1)",
+      "Bash(VIRTUAL_ENV=\"\" /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service/.venv/bin/python -m pytest /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service/tests/test_historical_prices.py -v 2>&1)",
+      "Bash(VIRTUAL_ENV=\"\" /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service/.venv/bin/python -m pytest /Users/stefanpapp/src/cc/manning/investment-intelligence/src/data-service/tests/ -v 2>&1)",
+      "Bash(npm install:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx tsc:*)",
+      "Bash(docker-compose ps:*)",
+      "Bash(cd:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose build:*)"
     ]
   }
 }

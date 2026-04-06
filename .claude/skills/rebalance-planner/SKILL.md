@@ -4,10 +4,12 @@ description: Generate trades required to rebalance a portfolio toward target all
 ---
 
 ## When to use
+
 - Portfolio has drifted from targets
 - User wants tax-aware or low-turnover rebalance suggestions
 
 ## Inputs required
+
 - current holdings
 - current prices
 - target allocation
@@ -16,23 +18,27 @@ description: Generate trades required to rebalance a portfolio toward target all
 - tax preference
 
 ## Rules
+
 - Prefer smallest trade set that lands within tolerance
 - Respect cash constraints
 - Highlight tax consequences when lot sales are required
 
 ## Output format
+
 - trade list
 - post-trade allocation
 - drift report
 - tax-cost estimate
 
 ## Edge cases
+
 - illiquid assets
 - restricted positions
 - fractional trading not allowed
 - tiny positions below lot minimums
 
 ## Validation checklist
+
 - confirm input completeness
 - verify units and currency conventions
 - state assumptions explicitly

@@ -11,4 +11,3 @@ Write a monthly portfolio summary based on these metrics and top movers.
 ```text
 Explain why performance lagged the benchmark without sounding like marketing sludge.
 ```
-

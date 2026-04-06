@@ -11,4 +11,3 @@ Rebalance this portfolio to a 60/30/10 target with a 2% tolerance band and minim
 ```text
 Use available cash first before selling appreciated assets.
 ```
-

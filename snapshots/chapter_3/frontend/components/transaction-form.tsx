@@ -8,7 +8,11 @@ interface Props {
   showTickerField?: boolean;
 }
 
-export function TransactionForm({ action, transaction, showTickerField = true }: Props) {
+export function TransactionForm({
+  action,
+  transaction,
+  showTickerField = true,
+}: Props) {
   const today = new Date().toISOString().split("T")[0];
 
   return (
@@ -16,7 +20,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       {showTickerField && (
         <>
           <div>
-            <label htmlFor="ticker" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="ticker"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Ticker Symbol
             </label>
             <input
@@ -30,7 +37,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
             />
           </div>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Company Name (optional)
             </label>
             <input
@@ -46,7 +56,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       )}
 
       <div>
-        <label htmlFor="transaction_type" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="transaction_type"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Type
         </label>
         <select
@@ -61,7 +74,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       </div>
 
       <div>
-        <label htmlFor="shares" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="shares"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Shares
         </label>
         <input
@@ -77,7 +93,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       </div>
 
       <div>
-        <label htmlFor="price_per_share" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="price_per_share"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Price per Share
         </label>
         <input
@@ -93,7 +112,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       </div>
 
       <div>
-        <label htmlFor="transaction_date" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="transaction_date"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Date
         </label>
         <input

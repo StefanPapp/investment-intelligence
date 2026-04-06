@@ -11,4 +11,3 @@ Summarize trailing and forward dividend income for this portfolio in USD.
 ```text
 Generate a monthly expected payout calendar and identify concentration risk by issuer.
 ```
-

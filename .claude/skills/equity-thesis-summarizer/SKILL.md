@@ -4,10 +4,12 @@ description: Create structured stock writeups including bull case, bear case, ca
 ---
 
 ## When to use
+
 - User wants a stock thesis page or research snapshot
 - Need structured commentary around a single equity
 
 ## Inputs required
+
 - company summary
 - financial metrics
 - valuation data
@@ -15,11 +17,13 @@ description: Create structured stock writeups including bull case, bear case, ca
 - catalysts
 
 ## Rules
+
 - Separate facts from thesis
 - Include downside case
 - Do not present speculative assumptions as established facts
 
 ## Output format
+
 - business overview
 - bull case
 - bear case
@@ -27,12 +31,14 @@ description: Create structured stock writeups including bull case, bear case, ca
 - monitoring checklist
 
 ## Edge cases
+
 - negative earnings
 - cyclical businesses
 - multiple business segments
 - sparse coverage
 
 ## Validation checklist
+
 - confirm input completeness
 - verify units and currency conventions
 - state assumptions explicitly
