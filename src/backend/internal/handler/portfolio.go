@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/client"
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/model"
 )
 
@@ -72,9 +73,25 @@ func (h *PortfolioHandler) GetPriceHistory(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	if endDate.After(time.Now()) {
+		http.Error(w, `{"error":"end date must not be in the future"}`, http.StatusBadRequest)
+		return
+	}
+
 	resp, err := h.Svc.GetPriceHistory(ticker, start, end)
 	if err != nil {
-		http.Error(w, `{"error":"price history not available for `+ticker+`"}`, http.StatusNotFound)
+		statusCode := http.StatusNotFound
+		if dsErr, ok := err.(*client.DataServiceError); ok {
+			switch {
+			case dsErr.StatusCode == http.StatusServiceUnavailable:
+				statusCode = http.StatusBadGateway
+			case dsErr.StatusCode == http.StatusNotFound:
+				statusCode = http.StatusNotFound
+			default:
+				statusCode = http.StatusBadGateway
+			}
+		}
+		http.Error(w, `{"error":"price history not available for `+ticker+`"}`, statusCode)
 		return
 	}
 

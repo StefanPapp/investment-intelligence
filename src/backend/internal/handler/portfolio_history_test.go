@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/client"
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/handler"
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/model"
 )
@@ -142,5 +144,38 @@ func TestGetPriceHistory_ServiceError(t *testing.T) {
 
 	if w.Code != http.StatusNotFound {
 		t.Fatalf("expected 404, got %d", w.Code)
+	}
+}
+
+func TestGetPriceHistory_EndInFuture(t *testing.T) {
+	h := &handler.PortfolioHandler{Svc: &mockPortfolioService{}}
+	r := newTestRouter(h)
+
+	futureDate := time.Now().AddDate(1, 0, 0).Format("2006-01-02")
+	req := httptest.NewRequest(http.MethodGet, "/api/prices/AAPL/history?start=2025-01-01&end="+futureDate, nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400 for future end date, got %d", w.Code)
+	}
+}
+
+func TestGetPriceHistory_ServiceUnavailable(t *testing.T) {
+	mock := &mockPortfolioService{
+		getPriceHistoryFn: func(ticker, start, end string) (*model.HistoricalPriceResponse, error) {
+			return nil, &client.DataServiceError{StatusCode: http.StatusServiceUnavailable, Message: "upstream busy"}
+		},
+	}
+
+	h := &handler.PortfolioHandler{Svc: mock}
+	r := newTestRouter(h)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/prices/AAPL/history?start=2025-01-01&end=2025-12-31", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadGateway {
+		t.Fatalf("expected 502, got %d", w.Code)
 	}
 }

@@ -9,6 +9,16 @@ import (
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/model"
 )
 
+// DataServiceError represents an error response from the data service with the upstream status code.
+type DataServiceError struct {
+	StatusCode int
+	Message    string
+}
+
+func (e *DataServiceError) Error() string {
+	return e.Message
+}
+
 type DataServiceClient struct {
 	baseURL    string
 	httpClient *http.Client
@@ -65,7 +75,10 @@ func (c *DataServiceClient) GetPriceHistory(ticker, start, end string) (*model.H
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("data service returned %d for ticker %s history", resp.StatusCode, ticker)
+		return nil, &DataServiceError{
+			StatusCode: resp.StatusCode,
+			Message:    fmt.Sprintf("data service returned %d for ticker %s history", resp.StatusCode, ticker),
+		}
 	}
 
 	var result model.HistoricalPriceResponse
