@@ -7,7 +7,7 @@ export default async function ChartsPage() {
   let holdings;
   try {
     const portfolio = await getPortfolio();
-    holdings = portfolio.holdings;
+    holdings = portfolio.holdings ?? [];
   } catch {
     return (
       <div className="text-center py-8">
