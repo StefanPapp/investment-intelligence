@@ -4,12 +4,14 @@ description: Calculate weighted average, FIFO, and lot-level cost basis plus rea
 ---
 
 ## When to use
+
 - Computing tax lots
 - Handling partial sells
 - Producing realized versus unrealized P/L
 - Reconciling broker imports
 
 ## Inputs required
+
 - transaction ledger
 - asset id
 - quantity
@@ -19,12 +21,14 @@ description: Calculate weighted average, FIFO, and lot-level cost basis plus rea
 - lot selection method
 
 ## Rules
+
 - Fees on purchases increase basis
 - Fees on sales reduce proceeds
 - Partial sells must consume lots deterministically
 - Reject sales that exceed available quantity unless shorting is explicitly allowed
 
 ## Output format
+
 - open lots
 - closed lots
 - realized gains
@@ -32,6 +36,7 @@ description: Calculate weighted average, FIFO, and lot-level cost basis plus rea
 - adjusted basis summary
 
 ## Edge cases
+
 - duplicate trades
 - fractional shares
 - stock splits
@@ -40,6 +45,7 @@ description: Calculate weighted average, FIFO, and lot-level cost basis plus rea
 - mixed fee currencies
 
 ## Validation checklist
+
 - confirm input completeness
 - verify units and currency conventions
 - state assumptions explicitly

@@ -11,4 +11,3 @@ Generate test vectors for weighted average cost basis and partial sells.
 ```text
 Create edge-case tests for Sharpe ratio and max drawdown.
 ```
-

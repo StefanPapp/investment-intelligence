@@ -11,4 +11,3 @@ Convert a USD and EUR portfolio into AMD and report how much of the gain came fr
 ```text
 Normalize mixed-currency transactions for cost basis calculations.
 ```
-

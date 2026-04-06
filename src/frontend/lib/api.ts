@@ -76,14 +76,19 @@ export async function getTransaction(id: string): Promise<Transaction> {
   return apiFetch<Transaction>(`/api/transactions/${id}`);
 }
 
-export async function createTransaction(input: CreateTransactionInput): Promise<Transaction> {
+export async function createTransaction(
+  input: CreateTransactionInput,
+): Promise<Transaction> {
   return apiFetch<Transaction>("/api/transactions", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export async function updateTransaction(id: string, input: UpdateTransactionInput): Promise<Transaction> {
+export async function updateTransaction(
+  id: string,
+  input: UpdateTransactionInput,
+): Promise<Transaction> {
   return apiFetch<Transaction>(`/api/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(input),
@@ -94,4 +99,41 @@ export async function deleteTransaction(id: string): Promise<void> {
   await fetch(`${BACKEND_URL}/api/transactions/${id}`, {
     method: "DELETE",
   });
+}
+
+export interface HistoricalPricePoint {
+  date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
+  adj_close: number | null;
+  volume: number | null;
+}
+
+export interface HistoricalPriceResponse {
+  ticker: string;
+  currency: string;
+  interval: string;
+  prices: HistoricalPricePoint[];
+}
+
+export async function getHistoricalPrices(
+  ticker: string,
+  start: string,
+  end: string,
+): Promise<HistoricalPriceResponse> {
+  const baseUrl =
+    typeof window === "undefined"
+      ? BACKEND_URL
+      : process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+  const res = await fetch(
+    `${baseUrl}/api/prices/${ticker}/history?start=${start}&end=${end}`,
+    { cache: "no-store" },
+  );
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(error.error || res.statusText);
+  }
+  return res.json();
 }

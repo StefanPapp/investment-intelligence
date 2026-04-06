@@ -13,6 +13,7 @@
 ### Task 1: Project Scaffolding & Docker Compose
 
 **Files:**
+
 - Create: `chapter_2/docker-compose.yml`
 - Create: `chapter_2/database/init.sql`
 - Create: `chapter_2/.gitignore`
@@ -27,6 +28,7 @@ mkdir -p chapter_2/{frontend,backend,data-service,database}
 **Step 2: Create `.gitignore`**
 
 Create `chapter_2/.gitignore`:
+
 ```gitignore
 # Go
 backend/tmp/
@@ -54,6 +56,7 @@ frontend/.next/
 **Step 3: Create `docker-compose.yml`**
 
 Create `chapter_2/docker-compose.yml`:
+
 ```yaml
 services:
   postgres:
@@ -113,6 +116,7 @@ volumes:
 **Step 4: Create `database/init.sql`**
 
 Create `chapter_2/database/init.sql` (bootstrap only — migrations handle schema):
+
 ```sql
 -- This file is intentionally minimal.
 -- Schema is managed by golang-migrate migrations in backend/migrations/.
@@ -126,6 +130,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2
 docker compose config --quiet && echo "Config valid"
 ```
+
 Expected: "Config valid" (will warn about missing build contexts, that's fine)
 
 **Step 6: Commit**
@@ -140,12 +145,14 @@ git commit -m "feat(ch2): scaffold project structure and docker-compose"
 ### Task 2: Database Migrations
 
 **Files:**
+
 - Create: `chapter_2/backend/migrations/000001_init_schema.up.sql`
 - Create: `chapter_2/backend/migrations/000001_init_schema.down.sql`
 
 **Step 1: Create up migration**
 
 Create `chapter_2/backend/migrations/000001_init_schema.up.sql`:
+
 ```sql
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -181,6 +188,7 @@ CREATE INDEX idx_transactions_date ON transactions(transaction_date);
 **Step 2: Create down migration**
 
 Create `chapter_2/backend/migrations/000001_init_schema.down.sql`:
+
 ```sql
 DROP TABLE IF EXISTS prices_cache;
 DROP TABLE IF EXISTS transactions;
@@ -202,6 +210,7 @@ docker compose exec -T postgres psql -U portfolio -d portfolio < backend/migrati
 # Verify tables
 docker compose exec postgres psql -U portfolio -d portfolio -c "\dt"
 ```
+
 Expected: Tables `stocks`, `transactions`, `prices_cache` listed.
 
 **Step 4: Test down migration**
@@ -210,6 +219,7 @@ Expected: Tables `stocks`, `transactions`, `prices_cache` listed.
 docker compose exec -T postgres psql -U portfolio -d portfolio < backend/migrations/000001_init_schema.down.sql
 docker compose exec postgres psql -U portfolio -d portfolio -c "\dt"
 ```
+
 Expected: No tables listed.
 
 **Step 5: Clean up and commit**
@@ -225,6 +235,7 @@ git commit -m "feat(ch2): add initial database migration"
 ### Task 3: Python Data Service — Scaffold & Health Endpoint
 
 **Files:**
+
 - Create: `chapter_2/data-service/pyproject.toml`
 - Create: `chapter_2/data-service/src/__init__.py`
 - Create: `chapter_2/data-service/src/main.py`
@@ -238,6 +249,7 @@ git commit -m "feat(ch2): add initial database migration"
 **Step 1: Create `pyproject.toml`**
 
 Create `chapter_2/data-service/pyproject.toml`:
+
 ```toml
 [project]
 name = "data-service"
@@ -267,6 +279,7 @@ asyncio_mode = "auto"
 Create `chapter_2/data-service/src/models/__init__.py` (empty).
 
 Create `chapter_2/data-service/src/models/price.py`:
+
 ```python
 from pydantic import BaseModel, Field
 from datetime import datetime
@@ -291,6 +304,7 @@ Create `chapter_2/data-service/src/routers/__init__.py` (empty).
 Create `chapter_2/data-service/src/services/__init__.py` (empty).
 
 Create `chapter_2/data-service/src/main.py`:
+
 ```python
 import logging
 
@@ -314,6 +328,7 @@ async def health() -> HealthResponse:
 Create `chapter_2/data-service/tests/__init__.py` (empty).
 
 Create `chapter_2/data-service/tests/test_health.py`:
+
 ```python
 from httpx import ASGITransport, AsyncClient
 
@@ -338,6 +353,7 @@ cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/data-servi
 uv sync --all-extras
 uv run pytest tests/test_health.py -v
 ```
+
 Expected: PASS — `test_health_returns_ok` passes.
 
 **Step 6: Commit**
@@ -352,6 +368,7 @@ git commit -m "feat(ch2): scaffold python data service with health endpoint"
 ### Task 4: Python Data Service — Price Endpoints
 
 **Files:**
+
 - Create: `chapter_2/data-service/src/services/market_data.py`
 - Create: `chapter_2/data-service/src/routers/prices.py`
 - Create: `chapter_2/data-service/tests/test_prices.py`
@@ -359,6 +376,7 @@ git commit -m "feat(ch2): scaffold python data service with health endpoint"
 **Step 1: Write failing tests**
 
 Create `chapter_2/data-service/tests/test_prices.py`:
+
 ```python
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, patch
@@ -407,11 +425,13 @@ async def test_get_price_invalid_ticker_returns_404():
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/data-service
 uv run pytest tests/test_prices.py -v
 ```
+
 Expected: FAIL — module `src.routers.prices` not found.
 
 **Step 3: Implement market data service**
 
 Create `chapter_2/data-service/src/services/market_data.py`:
+
 ```python
 import logging
 from datetime import datetime, timezone
@@ -459,6 +479,7 @@ class MarketDataService:
 **Step 4: Implement price router**
 
 Create `chapter_2/data-service/src/routers/prices.py`:
+
 ```python
 import logging
 
@@ -486,6 +507,7 @@ async def get_price(ticker: str) -> PriceResponse:
 **Step 5: Register router in main app**
 
 Modify `chapter_2/data-service/src/main.py` — add after the app creation:
+
 ```python
 from src.routers.prices import router as prices_router
 
@@ -493,6 +515,7 @@ app.include_router(prices_router)
 ```
 
 Full `main.py` becomes:
+
 ```python
 import logging
 
@@ -519,6 +542,7 @@ async def health() -> HealthResponse:
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/data-service
 uv run pytest tests/ -v
 ```
+
 Expected: All 3 tests PASS.
 
 **Step 7: Commit**
@@ -533,12 +557,14 @@ git commit -m "feat(ch2): add price endpoint with yfinance integration"
 ### Task 5: Python Data Service — Dockerfile
 
 **Files:**
+
 - Create: `chapter_2/data-service/Dockerfile`
 - Create: `chapter_2/data-service/.dockerignore`
 
 **Step 1: Create Dockerfile**
 
 Create `chapter_2/data-service/Dockerfile`:
+
 ```dockerfile
 FROM python:3.14-slim AS base
 
@@ -564,6 +590,7 @@ CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "800
 **Step 2: Create `.dockerignore`**
 
 Create `chapter_2/data-service/.dockerignore`:
+
 ```
 __pycache__/
 .venv/
@@ -589,6 +616,7 @@ sleep 3
 curl -s http://localhost:8000/health | python3 -m json.tool
 docker stop ds-test
 ```
+
 Expected: `{"status": "ok", "service": "data-service"}`
 
 **Step 5: Commit**
@@ -603,6 +631,7 @@ git commit -m "feat(ch2): add data service Dockerfile"
 ### Task 6: Go Backend — Scaffold & Health Endpoint
 
 **Files:**
+
 - Create: `chapter_2/backend/go.mod`
 - Create: `chapter_2/backend/go.sum`
 - Create: `chapter_2/backend/cmd/server/main.go`
@@ -625,6 +654,7 @@ go get github.com/google/uuid
 **Step 2: Write the failing test**
 
 Create `chapter_2/backend/internal/handler/health_test.go`:
+
 ```go
 package handler_test
 
@@ -659,11 +689,13 @@ func TestHealthReturnsOK(t *testing.T) {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go test ./internal/handler/ -v -run TestHealth
 ```
+
 Expected: FAIL — `handler.Health` undefined.
 
 **Step 4: Implement health handler**
 
 Create `chapter_2/backend/internal/handler/health.go`:
+
 ```go
 package handler
 
@@ -692,17 +724,20 @@ func Health(w http.ResponseWriter, r *http.Request) {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go test ./internal/handler/ -v -run TestHealth
 ```
+
 Expected: PASS.
 
 **Step 6: Create main.go with Chi router**
 
 Create directories first:
+
 ```bash
 mkdir -p chapter_2/backend/cmd/server
 mkdir -p chapter_2/backend/internal/{handler,service,repository,model,client}
 ```
 
 Create `chapter_2/backend/cmd/server/main.go`:
+
 ```go
 package main
 
@@ -741,6 +776,7 @@ func main() {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go build ./cmd/server/
 ```
+
 Expected: No errors.
 
 **Step 8: Commit**
@@ -755,6 +791,7 @@ git commit -m "feat(ch2): scaffold go backend with chi router and health endpoin
 ### Task 7: Go Backend — Domain Models
 
 **Files:**
+
 - Create: `chapter_2/backend/internal/model/stock.go`
 - Create: `chapter_2/backend/internal/model/transaction.go`
 - Create: `chapter_2/backend/internal/model/portfolio.go`
@@ -763,6 +800,7 @@ git commit -m "feat(ch2): scaffold go backend with chi router and health endpoin
 **Step 1: Create stock model**
 
 Create `chapter_2/backend/internal/model/stock.go`:
+
 ```go
 package model
 
@@ -783,6 +821,7 @@ type Stock struct {
 **Step 2: Create transaction model**
 
 Create `chapter_2/backend/internal/model/transaction.go`:
+
 ```go
 package model
 
@@ -832,6 +871,7 @@ type UpdateTransactionRequest struct {
 **Step 3: Create portfolio model**
 
 Create `chapter_2/backend/internal/model/portfolio.go`:
+
 ```go
 package model
 
@@ -857,6 +897,7 @@ type Portfolio struct {
 **Step 4: Create price model**
 
 Create `chapter_2/backend/internal/model/price.go`:
+
 ```go
 package model
 
@@ -876,6 +917,7 @@ type PriceCache struct {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go build ./internal/model/
 ```
+
 Expected: No errors.
 
 **Step 6: Commit**
@@ -890,6 +932,7 @@ git commit -m "feat(ch2): add domain models for stocks, transactions, portfolio,
 ### Task 8: Go Backend — Repository Layer
 
 **Files:**
+
 - Create: `chapter_2/backend/internal/repository/stock.go`
 - Create: `chapter_2/backend/internal/repository/transaction.go`
 - Create: `chapter_2/backend/internal/repository/price_cache.go`
@@ -902,6 +945,7 @@ Note: Repository tests require a live PostgreSQL. We use a test helper that conn
 **Step 1: Create test helper**
 
 Create `chapter_2/backend/internal/repository/testhelper_test.go`:
+
 ```go
 package repository_test
 
@@ -941,6 +985,7 @@ func testDB(t *testing.T) *sql.DB {
 **Step 2: Create stock repository**
 
 Create `chapter_2/backend/internal/repository/stock.go`:
+
 ```go
 package repository
 
@@ -1003,6 +1048,7 @@ func (r *StockRepo) GetByID(id uuid.UUID) (*model.Stock, error) {
 **Step 3: Write stock repo test**
 
 Create `chapter_2/backend/internal/repository/stock_test.go`:
+
 ```go
 package repository_test
 
@@ -1053,6 +1099,7 @@ func TestStockGetOrCreate_ReturnExisting(t *testing.T) {
 **Step 4: Create transaction repository**
 
 Create `chapter_2/backend/internal/repository/transaction.go`:
+
 ```go
 package repository
 
@@ -1162,6 +1209,7 @@ func (r *TransactionRepo) Delete(id uuid.UUID) error {
 **Step 5: Create price cache repository**
 
 Create `chapter_2/backend/internal/repository/price_cache.go`:
+
 ```go
 package repository
 
@@ -1207,6 +1255,7 @@ func (r *PriceCacheRepo) Upsert(ticker string, price float64, currency string) e
 **Step 6: Create portfolio repository**
 
 Create `chapter_2/backend/internal/repository/portfolio.go`:
+
 ```go
 package repository
 
@@ -1253,6 +1302,7 @@ func (r *PortfolioRepo) GetHoldings() ([]model.Holding, error) {
 **Step 7: Write transaction repo test**
 
 Create `chapter_2/backend/internal/repository/transaction_test.go`:
+
 ```go
 package repository_test
 
@@ -1346,6 +1396,7 @@ docker compose exec -T postgres psql -U portfolio -d portfolio < backend/migrati
 cd backend
 go test ./internal/repository/ -v
 ```
+
 Expected: All tests PASS.
 
 **Step 9: Clean up and commit**
@@ -1362,12 +1413,14 @@ git commit -m "feat(ch2): add repository layer with stock, transaction, price ca
 ### Task 9: Go Backend — Python Service Client
 
 **Files:**
+
 - Create: `chapter_2/backend/internal/client/data_service.go`
 - Create: `chapter_2/backend/internal/client/data_service_test.go`
 
 **Step 1: Write failing test**
 
 Create `chapter_2/backend/internal/client/data_service_test.go`:
+
 ```go
 package client_test
 
@@ -1429,11 +1482,13 @@ func TestDataServiceClient_GetPrice_ServerError(t *testing.T) {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go test ./internal/client/ -v
 ```
+
 Expected: FAIL — package not found.
 
 **Step 3: Implement data service client**
 
 Create `chapter_2/backend/internal/client/data_service.go`:
+
 ```go
 package client
 
@@ -1497,6 +1552,7 @@ func (c *DataServiceClient) GetPrice(ticker string) (*model.PriceCache, error) {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go test ./internal/client/ -v
 ```
+
 Expected: All tests PASS.
 
 **Step 5: Commit**
@@ -1511,12 +1567,14 @@ git commit -m "feat(ch2): add python data service HTTP client"
 ### Task 10: Go Backend — Service Layer
 
 **Files:**
+
 - Create: `chapter_2/backend/internal/service/transaction.go`
 - Create: `chapter_2/backend/internal/service/portfolio.go`
 
 **Step 1: Create transaction service**
 
 Create `chapter_2/backend/internal/service/transaction.go`:
+
 ```go
 package service
 
@@ -1587,6 +1645,7 @@ func (s *TransactionService) Delete(id uuid.UUID) error {
 **Step 2: Create portfolio service**
 
 Create `chapter_2/backend/internal/service/portfolio.go`:
+
 ```go
 package service
 
@@ -1673,6 +1732,7 @@ func (s *PortfolioService) fetchPrice(ticker string) float64 {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go build ./internal/service/
 ```
+
 Expected: No errors.
 
 **Step 4: Commit**
@@ -1687,6 +1747,7 @@ git commit -m "feat(ch2): add transaction and portfolio service layer"
 ### Task 11: Go Backend — HTTP Handlers
 
 **Files:**
+
 - Create: `chapter_2/backend/internal/handler/transaction.go`
 - Create: `chapter_2/backend/internal/handler/portfolio.go`
 - Create: `chapter_2/backend/internal/handler/transaction_test.go`
@@ -1694,6 +1755,7 @@ git commit -m "feat(ch2): add transaction and portfolio service layer"
 **Step 1: Write failing test for transaction handler**
 
 Create `chapter_2/backend/internal/handler/transaction_test.go`:
+
 ```go
 package handler_test
 
@@ -1791,11 +1853,13 @@ func TestListTransactionsHandler(t *testing.T) {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go test ./internal/handler/ -v -run TestCreate
 ```
+
 Expected: FAIL — `handler.TransactionHandler` undefined.
 
 **Step 3: Implement transaction handler**
 
 Create `chapter_2/backend/internal/handler/transaction.go`:
+
 ```go
 package handler
 
@@ -1916,6 +1980,7 @@ func (h *TransactionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 **Step 4: Implement portfolio handler**
 
 Create `chapter_2/backend/internal/handler/portfolio.go`:
+
 ```go
 package handler
 
@@ -1964,6 +2029,7 @@ func (h *PortfolioHandler) GetPrice(w http.ResponseWriter, r *http.Request) {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go test ./internal/handler/ -v
 ```
+
 Expected: All tests PASS (health + transaction handler tests).
 
 **Step 6: Commit**
@@ -1978,11 +2044,13 @@ git commit -m "feat(ch2): add transaction and portfolio HTTP handlers"
 ### Task 12: Go Backend — Wire Main & Migrations
 
 **Files:**
+
 - Modify: `chapter_2/backend/cmd/server/main.go`
 
 **Step 1: Update main.go with full wiring**
 
 Replace `chapter_2/backend/cmd/server/main.go` entirely:
+
 ```go
 package main
 
@@ -2122,6 +2190,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/backend
 go build ./cmd/server/
 ```
+
 Expected: No errors.
 
 **Step 3: Commit**
@@ -2136,12 +2205,14 @@ git commit -m "feat(ch2): wire main.go with all routes, migrations, and dependen
 ### Task 13: Go Backend — Dockerfile
 
 **Files:**
+
 - Create: `chapter_2/backend/Dockerfile`
 - Create: `chapter_2/backend/.dockerignore`
 
 **Step 1: Create multi-stage Dockerfile**
 
 Create `chapter_2/backend/Dockerfile`:
+
 ```dockerfile
 FROM golang:1.26-alpine AS builder
 
@@ -2172,6 +2243,7 @@ CMD ["./server"]
 **Step 2: Create `.dockerignore`**
 
 Create `chapter_2/backend/.dockerignore`:
+
 ```
 tmp/
 bin/
@@ -2184,6 +2256,7 @@ bin/
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2
 docker build -t backend-test ./backend
 ```
+
 Expected: Build succeeds.
 
 **Step 4: Commit**
@@ -2198,6 +2271,7 @@ git commit -m "feat(ch2): add backend multi-stage Dockerfile"
 ### Task 14: Next.js Frontend — Scaffold & Layout
 
 **Files:**
+
 - Create: `chapter_2/frontend/package.json`
 - Create: `chapter_2/frontend/next.config.js`
 - Create: `chapter_2/frontend/tsconfig.json`
@@ -2219,6 +2293,7 @@ Note: If prompted, accept defaults. This creates the scaffold with App Router, T
 **Step 2: Create API client**
 
 Create `chapter_2/frontend/lib/api.ts`:
+
 ```typescript
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
 
@@ -2298,14 +2373,19 @@ export async function getTransaction(id: string): Promise<Transaction> {
   return apiFetch<Transaction>(`/api/transactions/${id}`);
 }
 
-export async function createTransaction(input: CreateTransactionInput): Promise<Transaction> {
+export async function createTransaction(
+  input: CreateTransactionInput,
+): Promise<Transaction> {
   return apiFetch<Transaction>("/api/transactions", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export async function updateTransaction(id: string, input: UpdateTransactionInput): Promise<Transaction> {
+export async function updateTransaction(
+  id: string,
+  input: UpdateTransactionInput,
+): Promise<Transaction> {
   return apiFetch<Transaction>(`/api/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(input),
@@ -2322,6 +2402,7 @@ export async function deleteTransaction(id: string): Promise<void> {
 **Step 3: Update layout**
 
 Replace `chapter_2/frontend/app/layout.tsx`:
+
 ```tsx
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -2345,7 +2426,10 @@ export default function RootLayout({
             <Link href="/" className="text-lg font-semibold text-gray-900">
               Portfolio
             </Link>
-            <Link href="/transactions" className="text-gray-600 hover:text-gray-900">
+            <Link
+              href="/transactions"
+              className="text-gray-600 hover:text-gray-900"
+            >
               Transactions
             </Link>
             <Link href="/add" className="text-gray-600 hover:text-gray-900">
@@ -2366,6 +2450,7 @@ export default function RootLayout({
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/frontend
 npm run build
 ```
+
 Expected: Build succeeds (pages will show default content).
 
 **Step 5: Commit**
@@ -2380,12 +2465,14 @@ git commit -m "feat(ch2): scaffold next.js frontend with layout and api client"
 ### Task 15: Next.js Frontend — Portfolio Page
 
 **Files:**
+
 - Create: `chapter_2/frontend/components/portfolio-table.tsx`
 - Modify: `chapter_2/frontend/app/page.tsx`
 
 **Step 1: Create portfolio table component**
 
 Create `chapter_2/frontend/components/portfolio-table.tsx`:
+
 ```tsx
 import { Holding } from "@/lib/api";
 
@@ -2429,11 +2516,15 @@ export function PortfolioTable({ holdings }: { holdings: Holding[] }) {
               <td className="py-3 px-2 font-medium">{h.ticker}</td>
               <td className="py-3 px-2 text-gray-600">{h.name}</td>
               <td className="py-3 px-2 text-right">{h.total_shares}</td>
-              <td className="py-3 px-2 text-right">{formatCurrency(h.avg_cost)}</td>
+              <td className="py-3 px-2 text-right">
+                {formatCurrency(h.avg_cost)}
+              </td>
               <td className="py-3 px-2 text-right">
                 {h.current_price > 0 ? formatCurrency(h.current_price) : "N/A"}
               </td>
-              <td className="py-3 px-2 text-right">{formatCurrency(h.market_value)}</td>
+              <td className="py-3 px-2 text-right">
+                {formatCurrency(h.market_value)}
+              </td>
               <td
                 className={`py-3 px-2 text-right ${
                   h.gain_loss >= 0 ? "text-green-600" : "text-red-600"
@@ -2453,6 +2544,7 @@ export function PortfolioTable({ holdings }: { holdings: Holding[] }) {
 **Step 2: Create portfolio page (Server Component)**
 
 Replace `chapter_2/frontend/app/page.tsx`:
+
 ```tsx
 import { getPortfolio } from "@/lib/api";
 import { PortfolioTable } from "@/components/portfolio-table";
@@ -2466,7 +2558,9 @@ export default async function PortfolioPage() {
   } catch {
     return (
       <div className="text-center py-8">
-        <p className="text-red-500">Failed to load portfolio. Is the backend running?</p>
+        <p className="text-red-500">
+          Failed to load portfolio. Is the backend running?
+        </p>
       </div>
     );
   }
@@ -2479,19 +2573,23 @@ export default async function PortfolioPage() {
           <div>
             <span className="text-gray-500">Total Value: </span>
             <span className="font-semibold">
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                portfolio.total_value
-              )}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(portfolio.total_value)}
             </span>
           </div>
           <div
-            className={portfolio.total_gain_loss >= 0 ? "text-green-600" : "text-red-600"}
+            className={
+              portfolio.total_gain_loss >= 0 ? "text-green-600" : "text-red-600"
+            }
           >
             <span className="text-gray-500">P&L: </span>
             <span className="font-semibold">
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                portfolio.total_gain_loss
-              )}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(portfolio.total_gain_loss)}
             </span>
           </div>
         </div>
@@ -2510,6 +2608,7 @@ export default async function PortfolioPage() {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/frontend
 npm run build
 ```
+
 Expected: Build succeeds.
 
 **Step 4: Commit**
@@ -2524,6 +2623,7 @@ git commit -m "feat(ch2): add portfolio overview page with holdings table"
 ### Task 16: Next.js Frontend — Transaction Form & Add Page
 
 **Files:**
+
 - Create: `chapter_2/frontend/components/transaction-form.tsx`
 - Create: `chapter_2/frontend/app/actions/transactions.ts`
 - Create: `chapter_2/frontend/app/add/page.tsx`
@@ -2531,6 +2631,7 @@ git commit -m "feat(ch2): add portfolio overview page with holdings table"
 **Step 1: Create Server Actions**
 
 Create `chapter_2/frontend/app/actions/transactions.ts`:
+
 ```typescript
 "use server";
 
@@ -2579,6 +2680,7 @@ export async function deleteTransactionAction(id: string) {
 **Step 2: Create transaction form component**
 
 Create `chapter_2/frontend/components/transaction-form.tsx`:
+
 ```tsx
 "use client";
 
@@ -2590,7 +2692,11 @@ interface Props {
   showTickerField?: boolean;
 }
 
-export function TransactionForm({ action, transaction, showTickerField = true }: Props) {
+export function TransactionForm({
+  action,
+  transaction,
+  showTickerField = true,
+}: Props) {
   const today = new Date().toISOString().split("T")[0];
 
   return (
@@ -2598,7 +2704,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       {showTickerField && (
         <>
           <div>
-            <label htmlFor="ticker" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="ticker"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Ticker Symbol
             </label>
             <input
@@ -2612,7 +2721,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
             />
           </div>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Company Name (optional)
             </label>
             <input
@@ -2628,7 +2740,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       )}
 
       <div>
-        <label htmlFor="transaction_type" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="transaction_type"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Type
         </label>
         <select
@@ -2643,7 +2758,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       </div>
 
       <div>
-        <label htmlFor="shares" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="shares"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Shares
         </label>
         <input
@@ -2659,7 +2777,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       </div>
 
       <div>
-        <label htmlFor="price_per_share" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="price_per_share"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Price per Share
         </label>
         <input
@@ -2675,7 +2796,10 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
       </div>
 
       <div>
-        <label htmlFor="transaction_date" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="transaction_date"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Date
         </label>
         <input
@@ -2702,6 +2826,7 @@ export function TransactionForm({ action, transaction, showTickerField = true }:
 **Step 3: Create add transaction page**
 
 Create `chapter_2/frontend/app/add/page.tsx`:
+
 ```tsx
 import { TransactionForm } from "@/components/transaction-form";
 import { addTransactionAction } from "@/app/actions/transactions";
@@ -2724,6 +2849,7 @@ export default function AddTransactionPage() {
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/frontend
 npm run build
 ```
+
 Expected: Build succeeds.
 
 **Step 5: Commit**
@@ -2738,12 +2864,14 @@ git commit -m "feat(ch2): add transaction form with server actions"
 ### Task 17: Next.js Frontend — Transaction History & Edit Pages
 
 **Files:**
+
 - Create: `chapter_2/frontend/app/transactions/page.tsx`
 - Create: `chapter_2/frontend/app/transactions/[id]/edit/page.tsx`
 
 **Step 1: Create transaction history page**
 
 Create `chapter_2/frontend/app/transactions/page.tsx`:
+
 ```tsx
 import Link from "next/link";
 import { getTransactions } from "@/lib/api";
@@ -2758,7 +2886,9 @@ export default async function TransactionsPage() {
   } catch {
     return (
       <div className="text-center py-8">
-        <p className="text-red-500">Failed to load transactions. Is the backend running?</p>
+        <p className="text-red-500">
+          Failed to load transactions. Is the backend running?
+        </p>
       </div>
     );
   }
@@ -2827,9 +2957,7 @@ export default async function TransactionsPage() {
                       >
                         Edit
                       </Link>
-                      <form
-                        action={deleteTransactionAction.bind(null, t.id)}
-                      >
+                      <form action={deleteTransactionAction.bind(null, t.id)}>
                         <button
                           type="submit"
                           className="text-red-600 hover:underline text-xs"
@@ -2853,6 +2981,7 @@ export default async function TransactionsPage() {
 **Step 2: Create edit transaction page**
 
 Create `chapter_2/frontend/app/transactions/[id]/edit/page.tsx`:
+
 ```tsx
 import { getTransaction } from "@/lib/api";
 import { TransactionForm } from "@/components/transaction-form";
@@ -2895,6 +3024,7 @@ export default async function EditTransactionPage({
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2/frontend
 npm run build
 ```
+
 Expected: Build succeeds.
 
 **Step 4: Commit**
@@ -2909,12 +3039,14 @@ git commit -m "feat(ch2): add transaction history and edit pages"
 ### Task 18: Next.js Frontend — Dockerfile
 
 **Files:**
+
 - Create: `chapter_2/frontend/Dockerfile`
 - Create: `chapter_2/frontend/.dockerignore`
 
 **Step 1: Create Dockerfile**
 
 Create `chapter_2/frontend/Dockerfile`:
+
 ```dockerfile
 FROM node:22-alpine AS builder
 
@@ -2952,6 +3084,7 @@ CMD ["node", "server.js"]
 **Step 2: Update `next.config.js` for standalone output**
 
 Ensure `chapter_2/frontend/next.config.ts` (or `.js`) includes:
+
 ```javascript
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -2966,6 +3099,7 @@ Note: If `next.config.ts` was created by create-next-app, convert it or update i
 **Step 3: Create `.dockerignore`**
 
 Create `chapter_2/frontend/.dockerignore`:
+
 ```
 node_modules/
 .next/
@@ -2978,6 +3112,7 @@ node_modules/
 cd /Users/stefanpapp/src/cc/manning/investment-intelligence/chapter_2
 docker build -t frontend-test ./frontend
 ```
+
 Expected: Build succeeds.
 
 **Step 5: Commit**
@@ -3014,6 +3149,7 @@ curl -s http://localhost:8000/health | python3 -m json.tool
 curl -s http://localhost:8080/health | python3 -m json.tool
 curl -s http://localhost:3000 | head -20
 ```
+
 Expected: All services running, health endpoints return `{"status": "ok"}`, frontend returns HTML.
 
 **Step 3: Test CRUD via API**
@@ -3033,6 +3169,7 @@ curl -s http://localhost:8080/api/portfolio | python3 -m json.tool
 # Get price
 curl -s http://localhost:8080/api/prices/AAPL | python3 -m json.tool
 ```
+
 Expected: Transaction created, listed, portfolio shows holding with price.
 
 **Step 4: Verify frontend in browser**
@@ -3053,24 +3190,24 @@ git commit -m "feat(ch2): complete stock portfolio manager MVP"
 
 ## Summary
 
-| Task | Component | Description |
-|------|-----------|-------------|
-| 1 | Infra | Project scaffolding & docker-compose |
-| 2 | DB | Database migrations (up/down) |
-| 3 | Python | FastAPI scaffold & health endpoint |
-| 4 | Python | Price endpoints with yfinance |
-| 5 | Python | Dockerfile |
-| 6 | Go | Scaffold with Chi & health endpoint |
-| 7 | Go | Domain models |
-| 8 | Go | Repository layer (all repos + integration tests) |
-| 9 | Go | Python service HTTP client |
-| 10 | Go | Service layer (transaction + portfolio) |
-| 11 | Go | HTTP handlers (transaction + portfolio) |
-| 12 | Go | Wire main.go with routes & migrations |
-| 13 | Go | Dockerfile |
-| 14 | Next.js | Scaffold, layout, API client |
-| 15 | Next.js | Portfolio overview page |
-| 16 | Next.js | Transaction form & add page |
-| 17 | Next.js | Transaction history & edit pages |
-| 18 | Next.js | Dockerfile |
-| 19 | Integration | Full stack docker compose test |
+| Task | Component   | Description                                      |
+| ---- | ----------- | ------------------------------------------------ |
+| 1    | Infra       | Project scaffolding & docker-compose             |
+| 2    | DB          | Database migrations (up/down)                    |
+| 3    | Python      | FastAPI scaffold & health endpoint               |
+| 4    | Python      | Price endpoints with yfinance                    |
+| 5    | Python      | Dockerfile                                       |
+| 6    | Go          | Scaffold with Chi & health endpoint              |
+| 7    | Go          | Domain models                                    |
+| 8    | Go          | Repository layer (all repos + integration tests) |
+| 9    | Go          | Python service HTTP client                       |
+| 10   | Go          | Service layer (transaction + portfolio)          |
+| 11   | Go          | HTTP handlers (transaction + portfolio)          |
+| 12   | Go          | Wire main.go with routes & migrations            |
+| 13   | Go          | Dockerfile                                       |
+| 14   | Next.js     | Scaffold, layout, API client                     |
+| 15   | Next.js     | Portfolio overview page                          |
+| 16   | Next.js     | Transaction form & add page                      |
+| 17   | Next.js     | Transaction history & edit pages                 |
+| 18   | Next.js     | Dockerfile                                       |
+| 19   | Integration | Full stack docker compose test                   |

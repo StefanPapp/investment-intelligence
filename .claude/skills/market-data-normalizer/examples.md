@@ -11,4 +11,3 @@ Normalize AAPL price history from yfinance, including splits and dividends, and 
 ```text
 Map provider-specific tickers into a canonical asset identifier.
 ```
-

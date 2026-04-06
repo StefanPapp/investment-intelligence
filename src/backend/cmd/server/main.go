@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -51,6 +52,7 @@ func main() {
 
 	// Clients
 	dataClient := client.NewDataServiceClient(dataServiceURL)
+	historyCache := service.NewHistoryCache(15 * time.Minute)
 
 	// Services
 	txnSvc := &service.TransactionService{
@@ -61,6 +63,7 @@ func main() {
 		PortfolioRepo:  portfolioRepo,
 		PriceCacheRepo: priceCacheRepo,
 		DataClient:     dataClient,
+		HistoryCache:   historyCache,
 	}
 
 	// Handlers
@@ -84,6 +87,7 @@ func main() {
 
 		r.Get("/portfolio", portfolioHandler.GetPortfolio)
 		r.Get("/prices/{ticker}", portfolioHandler.GetPrice)
+		r.Get("/prices/{ticker}/history", portfolioHandler.GetPriceHistory)
 	})
 
 	port := os.Getenv("PORT")

@@ -4,6 +4,7 @@ backend/bin/
 
 # Python
 __pycache__/
+.pytest_cache/
 *.pyc
 data-service/.venv/
 data-service/*.egg-info/

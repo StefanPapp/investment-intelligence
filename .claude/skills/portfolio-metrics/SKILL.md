@@ -4,11 +4,13 @@ description: Compute portfolio performance and risk metrics from validated holdi
 ---
 
 ## When to use
+
 - Computing cumulative return, CAGR, annualized volatility, Sharpe ratio, Sortino ratio, max drawdown, beta, or correlation
 - Comparing a portfolio against a benchmark such as SPY, ACWI, or a custom index
 - Generating machine-readable metric summaries for UI, APIs, or reports
 
 ## Inputs required
+
 - holdings or transaction history
 - price history
 - benchmark series (optional)
@@ -18,6 +20,7 @@ description: Compute portfolio performance and risk metrics from validated holdi
 - dividend handling rule
 
 ## Rules
+
 - Always distinguish cumulative return from annualized return
 - Always state whether dividends and fees are included
 - Check time-series alignment before computing comparative metrics
@@ -25,6 +28,7 @@ description: Compute portfolio performance and risk metrics from validated holdi
 - Return warnings when data completeness is weak or volatility is zero
 
 ## Output format
+
 - summary table
 - formula notes
 - assumptions
@@ -32,6 +36,7 @@ description: Compute portfolio performance and risk metrics from validated holdi
 - json output on request
 
 ## Edge cases
+
 - missing prices
 - cash positions
 - negative holdings
@@ -40,6 +45,7 @@ description: Compute portfolio performance and risk metrics from validated holdi
 - short observation window
 
 ## Validation checklist
+
 - confirm input completeness
 - verify units and currency conventions
 - state assumptions explicitly

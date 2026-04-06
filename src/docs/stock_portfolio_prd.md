@@ -1,4 +1,5 @@
 # Product Requirements Document (PRD)
+
 ## Stock Portfolio Manager (Engineer Edition)
 
 Version: 1.0  
@@ -143,34 +144,34 @@ Runs inside Docker container.
 
 ## stocks
 
-| column | type | description |
-|------|------|-------------|
-| id | uuid | primary key |
-| ticker | text | stock symbol |
-| name | text | company name |
+| column     | type      | description        |
+| ---------- | --------- | ------------------ |
+| id         | uuid      | primary key        |
+| ticker     | text      | stock symbol       |
+| name       | text      | company name       |
 | created_at | timestamp | creation timestamp |
 
 ---
 
 ## transactions
 
-| column | type | description |
-|------|------|-------------|
-| id | uuid | primary key |
-| ticker | text | stock symbol |
-| transaction_type | text | buy or sell |
-| shares | numeric | number of shares |
-| price | numeric | transaction price |
-| transaction_date | date | trade date |
+| column           | type    | description       |
+| ---------------- | ------- | ----------------- |
+| id               | uuid    | primary key       |
+| ticker           | text    | stock symbol      |
+| transaction_type | text    | buy or sell       |
+| shares           | numeric | number of shares  |
+| price            | numeric | transaction price |
+| transaction_date | date    | trade date        |
 
 ---
 
 ## prices_cache
 
-| column | type | description |
-|------|------|-------------|
-| ticker | text | stock symbol |
-| price | numeric | latest price |
+| column     | type      | description     |
+| ---------- | --------- | --------------- |
+| ticker     | text      | stock symbol    |
+| price      | numeric   | latest price    |
 | fetched_at | timestamp | fetch timestamp |
 
 ---

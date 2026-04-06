@@ -11,4 +11,3 @@ Validate this broker import and identify records that would break cost basis cal
 ```text
 Flag duplicate dividend and split transactions.
 ```
-

@@ -11,4 +11,3 @@ Before implementing weighted average cost basis, define the formula, fees treatm
 ```text
 Guard against confusion between yield, current yield, and yield on cost.
 ```
-

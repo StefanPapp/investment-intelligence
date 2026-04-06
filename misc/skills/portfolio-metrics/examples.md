@@ -11,4 +11,3 @@ Analyze this portfolio against SPY. Include cumulative return, CAGR, annualized 
 ```text
 Compute rolling 12-month returns and downside volatility for a dividend portfolio in EUR.
 ```
-

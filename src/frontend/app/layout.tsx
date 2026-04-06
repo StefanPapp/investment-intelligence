@@ -20,8 +20,14 @@ export default function RootLayout({
             <Link href="/" className="text-lg font-semibold text-gray-900">
               Portfolio
             </Link>
-            <Link href="/transactions" className="text-gray-600 hover:text-gray-900">
+            <Link
+              href="/transactions"
+              className="text-gray-600 hover:text-gray-900"
+            >
               Transactions
+            </Link>
+            <Link href="/charts" className="text-gray-600 hover:text-gray-900">
+              Charts
             </Link>
             <Link href="/add" className="text-gray-600 hover:text-gray-900">
               Add Transaction

@@ -19,12 +19,7 @@
   "max_drawdown": {
     "formula": "min((value_t - running_peak_t) / running_peak_t)",
     "sample_input": {
-      "series": [
-        100,
-        120,
-        90,
-        95
-      ]
+      "series": [100, 120, 90, 95]
     },
     "expected_output": -0.25
   }

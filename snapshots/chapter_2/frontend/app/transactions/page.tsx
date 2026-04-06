@@ -11,7 +11,9 @@ export default async function TransactionsPage() {
   } catch {
     return (
       <div className="text-center py-8">
-        <p className="text-red-500">Failed to load transactions. Is the backend running?</p>
+        <p className="text-red-500">
+          Failed to load transactions. Is the backend running?
+        </p>
       </div>
     );
   }
@@ -80,9 +82,7 @@ export default async function TransactionsPage() {
                       >
                         Edit
                       </Link>
-                      <form
-                        action={deleteTransactionAction.bind(null, t.id)}
-                      >
+                      <form action={deleteTransactionAction.bind(null, t.id)}>
                         <button
                           type="submit"
                           className="text-red-600 hover:underline text-xs"

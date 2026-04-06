@@ -4,15 +4,15 @@ Date: 2026-03-05
 
 ## Tech Choices
 
-| Component | Technology | Rationale |
-|-----------|-----------|-----------|
-| Frontend | Next.js (App Router, Server Components/Actions) | Modern patterns, no client fetch boilerplate |
-| Backend | Go + Chi router | Lightweight, idiomatic, stdlib-compatible |
-| Data Service | Python + FastAPI | Async, auto-docs, Pydantic validation |
-| Database | PostgreSQL 16 | Reliable, good aggregation support |
-| Migrations | golang-migrate | SQL-based, no ORM lock-in |
-| Market Data | yfinance | Free, sufficient for daily prices |
-| Containers | Docker Compose | Local-first, health checks, named volumes |
+| Component    | Technology                                      | Rationale                                    |
+| ------------ | ----------------------------------------------- | -------------------------------------------- |
+| Frontend     | Next.js (App Router, Server Components/Actions) | Modern patterns, no client fetch boilerplate |
+| Backend      | Go + Chi router                                 | Lightweight, idiomatic, stdlib-compatible    |
+| Data Service | Python + FastAPI                                | Async, auto-docs, Pydantic validation        |
+| Database     | PostgreSQL 16                                   | Reliable, good aggregation support           |
+| Migrations   | golang-migrate                                  | SQL-based, no ORM lock-in                    |
+| Market Data  | yfinance                                        | Free, sufficient for daily prices            |
+| Containers   | Docker Compose                                  | Local-first, health checks, named volumes    |
 
 ## Architecture
 

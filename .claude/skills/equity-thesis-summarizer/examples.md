@@ -11,4 +11,3 @@ Create a structured thesis summary for OUST with bull case, bear case, catalysts
 ```text
 Summarize valuation in a way that a serious investor can sanity-check.
 ```
-

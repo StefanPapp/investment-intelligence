@@ -11,4 +11,3 @@ Check these dashboard labels for finance correctness.
 ```text
 Rewrite tooltips so they are accurate and not fluffy nonsense.
 ```
-

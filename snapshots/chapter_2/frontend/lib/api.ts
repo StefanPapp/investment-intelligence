@@ -76,14 +76,19 @@ export async function getTransaction(id: string): Promise<Transaction> {
   return apiFetch<Transaction>(`/api/transactions/${id}`);
 }
 
-export async function createTransaction(input: CreateTransactionInput): Promise<Transaction> {
+export async function createTransaction(
+  input: CreateTransactionInput,
+): Promise<Transaction> {
   return apiFetch<Transaction>("/api/transactions", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export async function updateTransaction(id: string, input: UpdateTransactionInput): Promise<Transaction> {
+export async function updateTransaction(
+  id: string,
+  input: UpdateTransactionInput,
+): Promise<Transaction> {
   return apiFetch<Transaction>(`/api/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(input),
