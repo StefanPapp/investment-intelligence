@@ -142,3 +142,11 @@ Docker Compose sets these automatically for inter-container communication.
   Never swallow the original traceback.
 - Never write `except SomeError: raise` just to skip past a broader except
   clause — that means your except clauses are too broad.
+
+## Continuous Learning
+
+After fixing a bug, encountering unexpected behavior, or discovering a
+cross-service contract issue: propose a concise, general rule for this
+CLAUDE.md file. Only propose if the lesson is non-obvious and would prevent
+future mistakes. Ask the user: "I noticed [X]. Want me to add a rule to
+CLAUDE.md?" If nothing noteworthy happened in the interaction, say nothing.

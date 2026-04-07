@@ -1,5 +1,4 @@
-from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 from httpx import ASGITransport, AsyncClient
@@ -34,9 +33,11 @@ async def test_historical_prices_returns_ohlcv():
     assert data["ticker"] == "AAPL"
     assert data["currency"] == "USD"
     assert data["interval"] == "daily"
+    assert data["source"] == "yfinance"
+    assert "fetched_at" in data
     assert len(data["prices"]) == 2
     assert data["prices"][0]["open"] == 150.0
-    assert data["prices"][0]["volume"] == 48000000
+    assert data["prices"][0]["volume"] == 48000000.0
 
 
 async def test_historical_prices_invalid_ticker_returns_404():
@@ -101,7 +102,6 @@ async def test_historical_prices_service_unavailable_returns_503():
     mock_ticker.info = {}
 
     with patch("src.services.market_data.yf.Ticker", return_value=mock_ticker):
-        # Patch tenacity to not actually retry (speed up test)
         with patch.object(
             __import__("src.services.market_data", fromlist=["MarketDataService"]).MarketDataService,
             "_fetch_history",

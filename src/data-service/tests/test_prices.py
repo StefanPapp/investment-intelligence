@@ -1,17 +1,17 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 from unittest.mock import AsyncMock, patch
-
-from src.services.market_data import TickerNotFoundError
 
 from httpx import ASGITransport, AsyncClient
 
 from src.main import app
+from src.services.market_data import TickerNotFoundError
 
 
 async def test_get_price_returns_ticker_price():
     mock_price = {
         "ticker": "AAPL",
-        "price": 192.30,
+        "price": Decimal("192.30"),
         "currency": "USD",
         "fetched_at": datetime.now(timezone.utc).isoformat(),
     }
