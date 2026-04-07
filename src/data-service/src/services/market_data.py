@@ -9,8 +9,21 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 logger = logging.getLogger(__name__)
 
 
-class ServiceUnavailableError(Exception):
-    """Raised when the upstream data provider is unavailable after retries."""
+class MarketDataError(Exception):
+    """Base exception for all market data service errors."""
+
+    pass
+
+
+class TickerNotFoundError(MarketDataError):
+    """Raised when a ticker symbol is not found or has no data (permanent failure)."""
+
+    pass
+
+
+class ServiceUnavailableError(MarketDataError):
+    """Raised when the upstream data provider is unavailable after retries (retryable failure)."""
+
     pass
 
 
@@ -27,26 +40,28 @@ class MarketDataService:
             Dict with ticker, price, currency, fetched_at.
 
         Raises:
-            ValueError: If ticker is not found or has no price data.
+            TickerNotFoundError: If ticker is not found or has no price data.
+            ServiceUnavailableError: If yfinance is unreachable.
         """
+        stock = yf.Ticker(ticker)
         try:
-            stock = yf.Ticker(ticker)
             info = stock.info
-            price = info.get("currentPrice") or info.get("regularMarketPrice")
-            if price is None:
-                raise ValueError(f"Ticker not found: {ticker}")
-            currency = info.get("currency", "USD")
-            return {
-                "ticker": ticker.upper(),
-                "price": float(price),
-                "currency": currency,
-                "fetched_at": datetime.now(timezone.utc).isoformat(),
-            }
-        except ValueError:
-            raise
         except Exception as e:
-            logger.exception("Failed to fetch price for %s", ticker)
-            raise ValueError(f"Ticker not found: {ticker}") from e
+            raise ServiceUnavailableError(
+                f"Data provider temporarily unavailable for {ticker}"
+            ) from e
+
+        price = info.get("currentPrice") or info.get("regularMarketPrice")
+        if price is None:
+            raise TickerNotFoundError(f"Ticker not found: {ticker}")
+
+        currency = info.get("currency", "USD")
+        return {
+            "ticker": ticker.upper(),
+            "price": float(price),
+            "currency": currency,
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }
 
     async def get_historical_prices(
         self, ticker: str, start_date: str, end_date: str
@@ -62,25 +77,21 @@ class MarketDataService:
             Dict with ticker, currency, interval, and list of OHLCV price points.
 
         Raises:
-            ValueError: If ticker is not found or has no data in the given range.
+            TickerNotFoundError: If ticker has no data for the range.
+            ServiceUnavailableError: If yfinance is unreachable after retries.
         """
+        stock = yf.Ticker(ticker)
         try:
-            stock = yf.Ticker(ticker)
             df = self._fetch_history(stock, start_date, end_date)
-        except ValueError:
-            raise
         except Exception as e:
-            logger.exception("Failed to fetch history for %s", ticker)
-            raise ServiceUnavailableError(f"Data provider temporarily unavailable for {ticker}") from e
+            raise ServiceUnavailableError(
+                f"Data provider temporarily unavailable for {ticker}"
+            ) from e
 
         if df.empty:
-            raise ValueError(f"No data available for {ticker}")
+            raise TickerNotFoundError(f"No data available for {ticker}")
 
-        currency = "USD"
-        try:
-            currency = stock.info.get("currency", "USD")
-        except Exception:
-            pass
+        currency = self._get_currency(stock)
 
         start = pd.Timestamp(start_date)
         end = pd.Timestamp(end_date)
@@ -113,6 +124,15 @@ class MarketDataService:
             "interval": interval,
             "prices": prices,
         }
+
+    @staticmethod
+    def _get_currency(stock: yf.Ticker) -> str:
+        """Extract currency from ticker info, defaulting to USD on failure."""
+        try:
+            return stock.info.get("currency", "USD")
+        except Exception:
+            logger.warning("Could not fetch currency for %s, defaulting to USD", stock.ticker)
+            return "USD"
 
     @retry(
         stop=stop_after_attempt(3),

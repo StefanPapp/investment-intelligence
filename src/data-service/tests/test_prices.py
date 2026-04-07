@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, patch
 
+from src.services.market_data import TickerNotFoundError
+
 from httpx import ASGITransport, AsyncClient
 
 from src.main import app
@@ -29,7 +31,7 @@ async def test_get_price_invalid_ticker_returns_404():
     with patch(
         "src.routers.prices.market_data_service.get_price",
         new_callable=AsyncMock,
-        side_effect=ValueError("Ticker not found: INVALID"),
+        side_effect=TickerNotFoundError("Ticker not found: INVALID"),
     ):
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
