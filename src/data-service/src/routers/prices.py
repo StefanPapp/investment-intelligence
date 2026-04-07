@@ -3,7 +3,11 @@ import logging
 from fastapi import APIRouter, HTTPException
 
 from src.models.price import HistoricalPriceResponse, PriceResponse
-from src.services.market_data import MarketDataService, ServiceUnavailableError
+from src.services.market_data import (
+    MarketDataService,
+    ServiceUnavailableError,
+    TickerNotFoundError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +21,10 @@ async def get_price(ticker: str) -> PriceResponse:
     try:
         result = await market_data_service.get_price(ticker.upper())
         return PriceResponse(**result)
-    except ValueError as e:
+    except TickerNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except ServiceUnavailableError as e:
+        raise HTTPException(status_code=503, detail=str(e))
 
 
 @router.get("/price/{ticker}/history", response_model=HistoricalPriceResponse)
@@ -36,7 +42,7 @@ async def get_historical_prices(
             status_code=503,
             detail={"error": str(e), "retryable": True},
         )
-    except ValueError as e:
+    except TickerNotFoundError as e:
         raise HTTPException(
             status_code=404,
             detail={"error": str(e), "retryable": False},
