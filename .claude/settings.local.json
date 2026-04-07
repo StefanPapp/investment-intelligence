@@ -37,7 +37,11 @@
       "Bash(docker-compose ps:*)",
       "Bash(cd:*)",
       "Bash(docker-compose up:*)",
-      "Bash(docker-compose build:*)"
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose logs:*)",
+      "Skill(update-config)",
+      "Bash(jq:*)",
+      "Bash(xxd)"
     ]
   }
 }
