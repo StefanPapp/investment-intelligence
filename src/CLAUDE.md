@@ -72,6 +72,10 @@ npm run lint                       # ESLint
 - `repository/` does raw SQL with `database/sql` (no ORM)
 - `client/data_service.go` is the HTTP client for the Python service
 - Tests use `*_test.go` files co-located with source; repository tests use a shared test helper
+- Initialize slice fields to empty (`make([]T, 0)` or `[]T{}`) before JSON
+  serialization. Go's `encoding/json` encodes nil slices as `null`, not `[]`.
+  Every consumer — frontend, mobile, third-party — must then guard against null
+  where an array is expected. Fix at the source, not at every consumer.
 
 ### Python Data Service (FastAPI)
 
@@ -88,6 +92,11 @@ npm run lint                       # ESLint
 - `components/` — shared UI components (portfolio-table, transaction-form)
 - Tailwind CSS v4 for styling
 - `output: "standalone"` in next.config.ts for Docker deployment
+- Code in `"use client"` components runs in the browser. Only `NEXT_PUBLIC_`-prefixed
+  env vars are embedded at build time and available there. Server-only env vars
+  (like `BACKEND_URL`) silently resolve to `undefined` in client components — no
+  build error, just a runtime failure. When adding a fetch call, always ask: "Does
+  this code run on the server or in the browser?" and choose the env var accordingly.
 
 ## Database Schema
 
@@ -115,3 +124,21 @@ GET    /api/prices/{ticker}        # Current price (cached or fresh)
 | Frontend | `BACKEND_URL`      | `http://localhost:8080` |
 
 Docker Compose sets these automatically for inter-container communication.
+
+## Exception Handling
+
+- Never catch broad exceptions and re-raise as a different, less specific error.
+  Preserve the failure category: network errors stay network errors, validation
+  errors stay validation errors.
+- Minimize try block scope. Only wrap the lines that can actually throw the
+  exception you're catching.
+- Define domain-specific exceptions (inherit from a shared base). Never use
+  ValueError/RuntimeError as cross-layer error contracts.
+- Distinguish retryable (network, rate-limit, timeout) from permanent
+  (not found, validation) failures in exception hierarchy.
+- Never log-and-raise in the same handler. Pick one. Let the caller decide
+  logging strategy.
+- If you catch an exception only to re-raise your own, chain it with `from e`.
+  Never swallow the original traceback.
+- Never write `except SomeError: raise` just to skip past a broader except
+  clause — that means your except clauses are too broad.
