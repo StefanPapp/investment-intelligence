@@ -6,7 +6,7 @@ import re
 data = json.load(sys.stdin)
 tool_input = data.get("tool_input", {})
 file_path = tool_input.get("file_path", "")
-content = tool_input.get("content", "") or tool_input.get("new_str", "")
+content = tool_input.get("content", "") or tool_input.get("new_string", "")
 
 
 # Only check files in financial code paths
@@ -17,10 +17,10 @@ if not any(p in file_path.lower() for p in finance_paths):
 
 # Check for floating-point usage in monetary contexts
 float_patterns = [
-    r"\\bfloat\\b",
-    r"\\bfloat32\\b",
-    r"\\bfloat64\\b",
-    r"\\b\\d+\\.\\d+\\s*[\\+\\-\\*\\/]",  # literal float arithmetic
+    r"\bfloat\b",
+    r"\bfloat32\b",
+    r"\bfloat64\b",
+    r"\b\d+\.\d+\s*[\+\-\*\/]",  # literal float arithmetic
 ]
 
 

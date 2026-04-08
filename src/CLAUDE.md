@@ -143,6 +143,16 @@ Docker Compose sets these automatically for inter-container communication.
 - Never write `except SomeError: raise` just to skip past a broader except
   clause — that means your except clauses are too broad.
 
+## Hooks
+
+- When writing hooks that inspect tool input, verify field names against the
+  actual tool schema — do not guess. The Edit tool uses `new_string` (not
+  `new_str`), the Write tool uses `content`, and `file_path` is shared. A
+  wrong field name silently returns empty string, making the check a no-op.
+- When writing regex in Python hook scripts, use single raw-string escapes
+  (`r"\bfloat\b"`). Double escaping (`r"\\bfloat\\b"`) matches literal
+  backslashes, silently passing everything through.
+
 ## Continuous Learning
 
 After fixing a bug, encountering unexpected behavior, or discovering a
