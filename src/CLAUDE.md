@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Chapter 3 of a Manning book project — a **stock portfolio manager** with four containerized services: Next.js frontend, Go backend API, Python data service (market prices via yfinance), and PostgreSQL.
+Chapter 3 of a Manning book project — a **stock portfolio manager** with three containerized services (Next.js frontend, Go backend API, Python data service for market prices via yfinance) and a managed **Neon Postgres** database.
 
 ## Architecture
 
 ```
-Browser → Next.js SSR (:3000) → Go Backend (:8080) → PostgreSQL (:5432)
+Browser → Next.js SSR (:3000) → Go Backend (:8080) → Neon Postgres (external)
                                        ↓
                                Python Data Service (:8000) → yfinance
 ```
@@ -25,10 +25,21 @@ Browser → Next.js SSR (:3000) → Go Backend (:8080) → PostgreSQL (:5432)
 
 ### Full stack (Docker)
 
+The database is **Neon Postgres** (serverless); there is no local `postgres` container. Before first run, copy `.env.example` → `.env` and paste a Neon connection string:
+
 ```bash
-docker-compose up --build          # Start all services
-docker-compose down -v             # Stop and remove volumes
+cp .env.example .env
+# Edit .env and set DATABASE_URL=postgres://...neon.tech/...?sslmode=require
 ```
+
+Then:
+
+```bash
+docker-compose up --build          # Start data-service, backend, frontend
+docker-compose down                # Stop all services
+```
+
+`docker-compose down -v` no longer wipes a local Postgres volume — the schema lives on Neon and persists across runs. To reset it, create a new Neon branch or drop tables via `psql "$DATABASE_URL"`.
 
 ### Go Backend (`backend/`)
 
