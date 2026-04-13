@@ -1,7 +1,4 @@
 {
-  "enabledPlugins": {
-    "notion@claude-plugins-official": true
-  },
   "hooks": {
     "PostToolUse": [
       {
@@ -35,5 +32,9 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "notion@claude-plugins-official": true,
+    "neon@claude-plugins-official": true
   }
 }

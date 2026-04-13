@@ -47,7 +47,9 @@
       "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/model/price.go\"\"\"\",\"\"\"\"content\"\"\"\":\"\"\"\"type PriceCache struct { Price float64 }\"\"\"\"}}')",
       "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/handler/health.go\"\"\"\",\"\"\"\"content\"\"\"\":\"\"\"\"type Health struct { Status string }\"\"\"\"}}')",
       "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/model/price.go\"\"\"\",\"\"\"\"content\"\"\"\":\"\"\"\"type PriceCache struct { Price string }\"\"\"\"}}')",
-      "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/model/price.go\"\"\"\",\"\"\"\"new_string\"\"\"\":\"\"\"\"Price float64\"\"\"\"}}')"
+      "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/model/price.go\"\"\"\",\"\"\"\"new_string\"\"\"\":\"\"\"\"Price float64\"\"\"\"}}')",
+      "Bash(DATABASE_URL=\"postgres://dummy:dummy@example.com/db?sslmode=require\" docker compose config --quiet)",
+      "Bash(unset DATABASE_URL)"
     ]
   }
 }

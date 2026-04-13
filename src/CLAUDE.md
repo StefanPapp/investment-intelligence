@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Chapter 3 of a Manning book project — a **stock portfolio manager** with four containerized services: Next.js frontend, Go backend API, Python data service (market prices via yfinance), and PostgreSQL.
+Chapter 3 of a Manning book project — a **stock portfolio manager** with three containerized services (Next.js frontend, Go backend API, Python data service for market prices via yfinance) and a managed **Neon Postgres** database.
 
 ## Architecture
 
 ```
-Browser → Next.js SSR (:3000) → Go Backend (:8080) → PostgreSQL (:5432)
+Browser → Next.js SSR (:3000) → Go Backend (:8080) → Neon Postgres (external)
                                        ↓
                                Python Data Service (:8000) → yfinance
 ```
@@ -25,10 +25,21 @@ Browser → Next.js SSR (:3000) → Go Backend (:8080) → PostgreSQL (:5432)
 
 ### Full stack (Docker)
 
+The database is **Neon Postgres** (serverless); there is no local `postgres` container. Before first run, copy `.env.example` → `.env` and paste a Neon connection string:
+
 ```bash
-docker-compose up --build          # Start all services
-docker-compose down -v             # Stop and remove volumes
+cp .env.example .env
+# Edit .env and set DATABASE_URL=postgres://...neon.tech/...?sslmode=require
 ```
+
+Then:
+
+```bash
+docker-compose up --build          # Start data-service, backend, frontend
+docker-compose down                # Stop all services
+```
+
+`docker-compose down -v` no longer wipes a local Postgres volume — the schema lives on Neon and persists across runs. To reset it, create a new Neon branch or drop tables via `psql "$DATABASE_URL"`.
 
 ### Go Backend (`backend/`)
 
@@ -160,3 +171,32 @@ cross-service contract issue: propose a concise, general rule for this
 CLAUDE.md file. Only propose if the lesson is non-obvious and would prevent
 future mistakes. Ask the user: "I noticed [X]. Want me to add a rule to
 CLAUDE.md?" If nothing noteworthy happened in the interaction, say nothing.
+
+## Version Management
+
+### Branching
+
+- Never commit to main. Always create a feature branch.
+- Branch naming: `<type>/<ticket>-<short-description>` e.g. `feat/ABC-123-oauth-refresh`
+- Types: feat, fix, docs, refactor, test, chore, hotfix
+- Delete branches after merge.
+
+### Commits
+
+- Format: Conventional Commits — `type(scope): imperative description`
+- Atomic commits: one logical change per commit. Don't bundle unrelated changes.
+- If committing code with known issues, prefix description with `WIP:` and add a `Known Issues:` footer in the commit body explaining what's broken and why.
+- Never commit secrets, .env files, or large binaries.
+
+### Before pushing
+
+- Run tests. Do not push code that breaks existing tests.
+- Run linter/formatter. No lint warnings in pushed code.
+- Rebase on main before opening a PR to keep history linear.
+- Squash WIP commits into clean logical commits before PR.
+
+### PR hygiene
+
+- PR title follows the same Conventional Commits format.
+- PR description includes: what changed, why, how to test, and known limitations.
+- Link related issues/tickets.
