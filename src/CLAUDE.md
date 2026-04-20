@@ -127,15 +127,17 @@ GET    /api/prices/{ticker}        # Current price (cached or fresh)
 
 ## Environment Variables
 
-| Service  | Variable            | Default                 |
-| -------- | ------------------- | ----------------------- |
-| Backend  | `DATABASE_URL_PROD` | required                |
-| Backend  | `DATABASE_URL_TEST` | required                |
-| Backend  | `DATA_SERVICE_URL`  | required                |
-| Backend  | `PORT`              | `8080`                  |
-| Frontend | `BACKEND_URL`       | `http://localhost:8080` |
+| Service  | Variable            | Default                         |
+| -------- | ------------------- | ------------------------------- |
+| Backend  | `DATABASE_URL_PROD` | required                        |
+| Backend  | `DATABASE_URL_TEST` | required                        |
+| Backend  | `DATA_SERVICE_URL`  | required                        |
+| Backend  | `DB_ENV`            | `test` (Docker), `prod` (local) |
+| Backend  | `RESEED_TEST_DB`    | `false`                         |
+| Backend  | `PORT`              | `8080`                          |
+| Frontend | `BACKEND_URL`       | `http://localhost:8080`         |
 
-The backend reads the current git branch on startup. On `main` it uses `DATABASE_URL_PROD`; on any other branch it uses `DATABASE_URL_TEST` and auto-seeds reference portfolios if the stocks table is empty.
+`DB_ENV` controls which database is used (`prod` or `test`). On `test`, the backend auto-seeds reference portfolios if the stocks table is empty. Set `RESEED_TEST_DB=true` to wipe and reseed the test database on next startup (ignored when `DB_ENV=prod`).
 
 Docker Compose sets these automatically for inter-container communication.
 
