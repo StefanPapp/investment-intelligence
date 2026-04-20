@@ -49,7 +49,9 @@
       "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/model/price.go\"\"\"\",\"\"\"\"content\"\"\"\":\"\"\"\"type PriceCache struct { Price string }\"\"\"\"}}')",
       "Bash(printf '{\"\"\"\"tool_input\"\"\"\":{\"\"\"\"file_path\"\"\"\":\"\"\"\"internal/model/price.go\"\"\"\",\"\"\"\"new_string\"\"\"\":\"\"\"\"Price float64\"\"\"\"}}')",
       "Bash(DATABASE_URL=\"postgres://dummy:dummy@example.com/db?sslmode=require\" docker compose config --quiet)",
-      "Bash(unset DATABASE_URL)"
+      "Bash(unset DATABASE_URL)",
+      "mcp__plugin_neon_neon__list_projects",
+      "mcp__plugin_neon_neon__run_sql"
     ]
   }
 }

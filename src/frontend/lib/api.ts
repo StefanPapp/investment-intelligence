@@ -63,6 +63,16 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
+export interface HealthStatus {
+  status: string;
+  service: string;
+  db_target: string;
+}
+
+export async function getHealth(): Promise<HealthStatus> {
+  return apiFetch<HealthStatus>("/health");
+}
+
 export async function getPortfolio(): Promise<Portfolio> {
   return apiFetch<Portfolio>("/api/portfolio");
 }

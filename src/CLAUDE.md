@@ -127,12 +127,15 @@ GET    /api/prices/{ticker}        # Current price (cached or fresh)
 
 ## Environment Variables
 
-| Service  | Variable           | Default                 |
-| -------- | ------------------ | ----------------------- |
-| Backend  | `DATABASE_URL`     | required                |
-| Backend  | `DATA_SERVICE_URL` | required                |
-| Backend  | `PORT`             | `8080`                  |
-| Frontend | `BACKEND_URL`      | `http://localhost:8080` |
+| Service  | Variable            | Default                 |
+| -------- | ------------------- | ----------------------- |
+| Backend  | `DATABASE_URL_PROD` | required                |
+| Backend  | `DATABASE_URL_TEST` | required                |
+| Backend  | `DATA_SERVICE_URL`  | required                |
+| Backend  | `PORT`              | `8080`                  |
+| Frontend | `BACKEND_URL`       | `http://localhost:8080` |
+
+The backend reads the current git branch on startup. On `main` it uses `DATABASE_URL_PROD`; on any other branch it uses `DATABASE_URL_TEST` and auto-seeds reference portfolios if the stocks table is empty.
 
 Docker Compose sets these automatically for inter-container communication.
 
