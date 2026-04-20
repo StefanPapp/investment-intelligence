@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -17,14 +19,18 @@ import (
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/client"
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/handler"
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/repository"
+	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/seed"
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/service"
 )
 
 func main() {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("DATABASE_URL is required")
-	}
+	// Determine git branch to select the right database
+	branch := gitBranch()
+	dbURL, dbTarget := selectDatabase(branch)
+
+	log.Printf("Branch: %s → database: %s", branch, dbTarget)
+	handler.SetDbTarget(dbTarget)
+
 	dataServiceURL := os.Getenv("DATA_SERVICE_URL")
 	if dataServiceURL == "" {
 		log.Fatal("DATA_SERVICE_URL is required")
@@ -39,10 +45,17 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
-	log.Println("Connected to database")
+	log.Printf("Connected to database (%s)", dbTarget)
 
 	// Run migrations
 	runMigrations(db)
+
+	// Seed test database if empty
+	if dbTarget == "test" {
+		if err := seed.SeedIfEmpty(db); err != nil {
+			log.Fatalf("Failed to seed database: %v", err)
+		}
+	}
 
 	// Repositories
 	stockRepo := &repository.StockRepo{DB: db}
@@ -116,6 +129,36 @@ func runMigrations(db *sql.DB) {
 		log.Fatalf("Migration failed: %v", err)
 	}
 	log.Println("Migrations complete")
+}
+
+// gitBranch returns the current git branch name, or "unknown" if git is
+// unavailable (e.g. inside a Docker image with no .git directory).
+func gitBranch() string {
+	out, err := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
+	if err != nil {
+		log.Printf("Warning: could not detect git branch: %v (defaulting to \"unknown\")", err)
+		return "unknown"
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// selectDatabase picks the database URL based on the branch name.
+// "main" uses DATABASE_URL_PROD; everything else uses DATABASE_URL_TEST.
+func selectDatabase(branch string) (url, target string) {
+	prodURL := os.Getenv("DATABASE_URL_PROD")
+	testURL := os.Getenv("DATABASE_URL_TEST")
+
+	if prodURL == "" {
+		log.Fatal("DATABASE_URL_PROD is required")
+	}
+	if testURL == "" {
+		log.Fatal("DATABASE_URL_TEST is required")
+	}
+
+	if branch == "main" {
+		return prodURL, "prod"
+	}
+	return testURL, "test"
 }
 
 func corsMiddleware(next http.Handler) http.Handler {

@@ -16,7 +16,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required - set it in src/.env (see src/.env.example)}
+      DATABASE_URL_PROD: ${DATABASE_URL_PROD:?DATABASE_URL_PROD is required - set it in src/.env (see src/.env.example)}
+      DATABASE_URL_TEST: ${DATABASE_URL_TEST:?DATABASE_URL_TEST is required - set it in src/.env (see src/.env.example)}
       DATA_SERVICE_URL: http://data-service:8000
     depends_on:
       data-service:
