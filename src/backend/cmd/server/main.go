@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -24,12 +22,17 @@ import (
 )
 
 func main() {
-	// Determine git branch to select the right database
-	branch := gitBranch()
-	dbURL, dbTarget := selectDatabase(branch)
+	dbEnv := os.Getenv("DB_ENV")
+	if dbEnv == "" {
+		dbEnv = "prod"
+	}
+	if dbEnv != "prod" && dbEnv != "test" {
+		log.Fatalf("DB_ENV must be \"prod\" or \"test\", got %q", dbEnv)
+	}
 
-	log.Printf("Branch: %s → database: %s", branch, dbTarget)
-	handler.SetDbTarget(dbTarget)
+	dbURL := selectDatabase(dbEnv)
+	log.Printf("DB_ENV=%s", dbEnv)
+	handler.SetDbTarget(dbEnv)
 
 	dataServiceURL := os.Getenv("DATA_SERVICE_URL")
 	if dataServiceURL == "" {
@@ -45,13 +48,17 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
-	log.Printf("Connected to database (%s)", dbTarget)
+	log.Printf("Connected to database (%s)", dbEnv)
 
 	// Run migrations
 	runMigrations(db)
 
-	// Seed test database if empty
-	if dbTarget == "test" {
+	// Reseed test database if requested
+	if dbEnv == "test" && os.Getenv("RESEED_TEST_DB") == "true" {
+		if err := seed.ReseedDatabase(db); err != nil {
+			log.Fatalf("Failed to reseed database: %v", err)
+		}
+	} else if dbEnv == "test" {
 		if err := seed.SeedIfEmpty(db); err != nil {
 			log.Fatalf("Failed to seed database: %v", err)
 		}
@@ -131,20 +138,8 @@ func runMigrations(db *sql.DB) {
 	log.Println("Migrations complete")
 }
 
-// gitBranch returns the current git branch name, or "unknown" if git is
-// unavailable (e.g. inside a Docker image with no .git directory).
-func gitBranch() string {
-	out, err := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
-	if err != nil {
-		log.Printf("Warning: could not detect git branch: %v (defaulting to \"unknown\")", err)
-		return "unknown"
-	}
-	return strings.TrimSpace(string(out))
-}
-
-// selectDatabase picks the database URL based on the branch name.
-// "main" uses DATABASE_URL_PROD; everything else uses DATABASE_URL_TEST.
-func selectDatabase(branch string) (url, target string) {
+// selectDatabase returns the connection string for the given environment.
+func selectDatabase(env string) string {
 	prodURL := os.Getenv("DATABASE_URL_PROD")
 	testURL := os.Getenv("DATABASE_URL_TEST")
 
@@ -155,10 +150,10 @@ func selectDatabase(branch string) (url, target string) {
 		log.Fatal("DATABASE_URL_TEST is required")
 	}
 
-	if branch == "main" {
-		return prodURL, "prod"
+	if env == "prod" {
+		return prodURL
 	}
-	return testURL, "test"
+	return testURL
 }
 
 func corsMiddleware(next http.Handler) http.Handler {

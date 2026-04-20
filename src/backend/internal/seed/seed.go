@@ -61,6 +61,19 @@ func ReferencePortfolios() []ReferencePortfolio {
 	}
 }
 
+// ReseedDatabase deletes all data and reseeds from scratch.
+// Only call this on the test database.
+func ReseedDatabase(db *sql.DB) error {
+	log.Println("RESEED_TEST_DB=true — clearing test data")
+	for _, table := range []string{"transactions", "prices_cache", "stocks"} {
+		if _, err := db.Exec("DELETE FROM " + table); err != nil {
+			return fmt.Errorf("clear %s: %w", table, err)
+		}
+	}
+	log.Println("Test data cleared — reseeding")
+	return insertReferenceData(db)
+}
+
 // SeedIfEmpty checks whether the stocks table is empty. If it is, it inserts
 // all reference portfolios as buy transactions dated 2026-04-17.
 func SeedIfEmpty(db *sql.DB) error {
@@ -74,7 +87,10 @@ func SeedIfEmpty(db *sql.DB) error {
 	}
 
 	log.Println("Stocks table is empty — seeding reference data")
+	return insertReferenceData(db)
+}
 
+func insertReferenceData(db *sql.DB) error {
 	stockRepo := &repository.StockRepo{DB: db}
 
 	const txnDate = "2026-04-17"
