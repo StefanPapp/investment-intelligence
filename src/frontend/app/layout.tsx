@@ -36,6 +36,9 @@ export default async function RootLayout({
             <Link href="/add" className="text-gray-600 hover:text-gray-900">
               Add Transaction
             </Link>
+            <Link href="/import" className="text-gray-600 hover:text-gray-900">
+              Import
+            </Link>
             {isTest && (
               <span className="ml-auto px-2 py-0.5 text-xs font-semibold rounded bg-amber-100 text-amber-800 border border-amber-300">
                 TEST

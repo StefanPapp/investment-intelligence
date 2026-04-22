@@ -51,7 +51,8 @@
       "Bash(DATABASE_URL=\"postgres://dummy:dummy@example.com/db?sslmode=require\" docker compose config --quiet)",
       "Bash(unset DATABASE_URL)",
       "mcp__plugin_neon_neon__list_projects",
-      "mcp__plugin_neon_neon__run_sql"
+      "mcp__plugin_neon_neon__run_sql",
+      "WebSearch"
     ]
   }
 }
