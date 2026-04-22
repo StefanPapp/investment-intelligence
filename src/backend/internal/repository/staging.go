@@ -53,10 +53,11 @@ func (r *StagingRepo) InsertStagingRows(importID uuid.UUID, rows []model.Extract
 			warnings = []string{}
 		}
 
+		// Mark as needs_attention only when truly required fields are missing.
+		// Trade date is optional (e.g. holdings imports don't have dates).
+		// Informational warnings alone don't block import.
 		status := "ready"
-		if len(warnings) > 0 ||
-			row.TradeDate == nil ||
-			row.Symbol == nil ||
+		if row.Symbol == nil ||
 			row.Side == nil ||
 			row.Quantity == nil ||
 			row.PricePerShare == nil {

@@ -116,7 +116,10 @@ func (s *StagingService) Confirm(importID uuid.UUID) (*model.ConfirmResult, erro
 			continue
 		}
 
-		// All required fields are non-nil when status is "ready".
+		if row.Symbol == nil || row.Side == nil || row.Quantity == nil || row.PricePerShare == nil {
+			continue
+		}
+
 		ticker := strings.ToUpper(*row.Symbol)
 		stock, err := s.StockRepo.GetOrCreate(ticker, ticker)
 		if err != nil {
@@ -124,9 +127,14 @@ func (s *StagingService) Confirm(importID uuid.UUID) (*model.ConfirmResult, erro
 			continue
 		}
 
+		tradeDate := "1970-01-01"
+		if row.TradeDate != nil {
+			tradeDate = *row.TradeDate
+		}
+
 		// Build a deterministic source ID: date_ticker_side_qty_price
 		sourceID := fmt.Sprintf("%s_%s_%s_%g_%g",
-			*row.TradeDate,
+			tradeDate,
 			ticker,
 			*row.Side,
 			*row.Quantity,
@@ -138,7 +146,7 @@ func (s *StagingService) Confirm(importID uuid.UUID) (*model.ConfirmResult, erro
 			*row.Side,
 			*row.Quantity,
 			*row.PricePerShare,
-			*row.TradeDate,
+			tradeDate,
 			"file_import",
 			sourceID,
 		)

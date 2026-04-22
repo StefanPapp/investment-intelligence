@@ -1,6 +1,8 @@
+import json
 from decimal import Decimal
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from src.models.price import JsonDecimal
 
@@ -54,3 +56,11 @@ class ExtractionResult(BaseModel):
 
     transactions: list[ExtractedTransaction] = Field(default_factory=list)
     skipped: list[SkippedRow] = Field(default_factory=list)
+
+    @field_validator("transactions", "skipped", mode="before")
+    @classmethod
+    def parse_stringified_json(cls, v: Any) -> Any:
+        """LLM structured output sometimes returns large arrays as JSON strings."""
+        if isinstance(v, str):
+            return json.loads(v)
+        return v
