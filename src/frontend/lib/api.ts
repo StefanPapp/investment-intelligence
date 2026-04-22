@@ -128,6 +128,16 @@ export interface HistoricalPriceResponse {
   prices: HistoricalPricePoint[];
 }
 
+export interface ImportResult {
+  created: number;
+  updated: number;
+  total: number;
+}
+
+export async function importAlpaca(): Promise<ImportResult> {
+  return apiFetch<ImportResult>("/api/import/alpaca", { method: "POST" });
+}
+
 export async function getHistoricalPrices(
   ticker: string,
   start: string,

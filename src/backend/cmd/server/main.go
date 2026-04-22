@@ -69,6 +69,7 @@ func main() {
 	txnRepo := &repository.TransactionRepo{DB: db}
 	portfolioRepo := &repository.PortfolioRepo{DB: db}
 	priceCacheRepo := &repository.PriceCacheRepo{DB: db}
+	importRepo := &repository.ImportRepo{DB: db}
 
 	// Clients
 	dataClient := client.NewDataServiceClient(dataServiceURL)
@@ -85,10 +86,16 @@ func main() {
 		DataClient:     dataClient,
 		HistoryCache:   historyCache,
 	}
+	importSvc := &service.ImportService{
+		StockRepo:  stockRepo,
+		ImportRepo: importRepo,
+		DataClient: dataClient,
+	}
 
 	// Handlers
 	txnHandler := &handler.TransactionHandler{Svc: txnSvc}
 	portfolioHandler := &handler.PortfolioHandler{Svc: portfolioSvc}
+	importHandler := &handler.ImportHandler{Svc: importSvc}
 
 	// Router
 	r := chi.NewRouter()
@@ -108,6 +115,8 @@ func main() {
 		r.Get("/portfolio", portfolioHandler.GetPortfolio)
 		r.Get("/prices/{ticker}", portfolioHandler.GetPrice)
 		r.Get("/prices/{ticker}/history", portfolioHandler.GetPriceHistory)
+
+		r.Post("/import/alpaca", importHandler.ImportAlpaca)
 	})
 
 	port := os.Getenv("PORT")

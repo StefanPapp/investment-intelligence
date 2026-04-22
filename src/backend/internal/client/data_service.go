@@ -63,6 +63,27 @@ func (c *DataServiceClient) GetPrice(ticker string) (*model.PriceCache, error) {
 	}, nil
 }
 
+func (c *DataServiceClient) GetAlpacaOrders() ([]model.AlpacaOrder, error) {
+	resp, err := c.httpClient.Get(fmt.Sprintf("%s/alpaca/orders", c.baseURL))
+	if err != nil {
+		return nil, fmt.Errorf("fetch alpaca orders: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, &DataServiceError{
+			StatusCode: resp.StatusCode,
+			Message:    fmt.Sprintf("data service returned %d for alpaca orders", resp.StatusCode),
+		}
+	}
+
+	var orders []model.AlpacaOrder
+	if err := json.NewDecoder(resp.Body).Decode(&orders); err != nil {
+		return nil, fmt.Errorf("decode alpaca orders: %w", err)
+	}
+	return orders, nil
+}
+
 func (c *DataServiceClient) GetPriceHistory(ticker, start, end string) (*model.HistoricalPriceResponse, error) {
 	url := fmt.Sprintf("%s/price/%s/history?start=%s&end=%s", c.baseURL, ticker, start, end)
 

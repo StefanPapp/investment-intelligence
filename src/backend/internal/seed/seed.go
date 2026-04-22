@@ -104,9 +104,9 @@ func insertReferenceData(db *sql.DB) error {
 			}
 
 			_, err = db.Exec(
-				`INSERT INTO transactions (stock_id, transaction_type, shares, price_per_share, transaction_date)
-				 VALUES ($1, $2, $3, $4, $5)`,
-				stock.ID, "buy", pos.Shares, pos.PricePerShare, txnDate,
+				`INSERT INTO transactions (stock_id, transaction_type, shares, price_per_share, transaction_date, source)
+				 VALUES ($1, $2, $3, $4, $5, $6)`,
+				stock.ID, "buy", pos.Shares, pos.PricePerShare, txnDate, "manual",
 			)
 			if err != nil {
 				return fmt.Errorf("seed transaction %s: %w", pos.Ticker, err)
