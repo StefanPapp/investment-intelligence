@@ -70,6 +70,7 @@ func main() {
 	portfolioRepo := &repository.PortfolioRepo{DB: db}
 	priceCacheRepo := &repository.PriceCacheRepo{DB: db}
 	importRepo := &repository.ImportRepo{DB: db}
+	stagingRepo := &repository.StagingRepo{DB: db}
 
 	// Clients
 	dataClient := client.NewDataServiceClient(dataServiceURL)
@@ -91,11 +92,19 @@ func main() {
 		ImportRepo: importRepo,
 		DataClient: dataClient,
 	}
+	stagingSvc := &service.StagingService{
+		StagingRepo: stagingRepo,
+		StockRepo:   stockRepo,
+		ImportRepo:  importRepo,
+		DataClient:  dataClient,
+		UploadDir:   "/tmp/imports",
+	}
 
 	// Handlers
 	txnHandler := &handler.TransactionHandler{Svc: txnSvc}
 	portfolioHandler := &handler.PortfolioHandler{Svc: portfolioSvc}
 	importHandler := &handler.ImportHandler{Svc: importSvc}
+	uploadHandler := &handler.UploadHandler{Svc: stagingSvc}
 
 	// Router
 	r := chi.NewRouter()
@@ -117,6 +126,11 @@ func main() {
 		r.Get("/prices/{ticker}/history", portfolioHandler.GetPriceHistory)
 
 		r.Post("/import/alpaca", importHandler.ImportAlpaca)
+
+		r.Post("/imports/upload", uploadHandler.Upload)
+		r.Get("/imports/{importId}", uploadHandler.GetImport)
+		r.Patch("/imports/{importId}/rows/{rowId}", uploadHandler.PatchRow)
+		r.Post("/imports/{importId}/confirm", uploadHandler.Confirm)
 	})
 
 	port := os.Getenv("PORT")

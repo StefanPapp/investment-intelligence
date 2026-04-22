@@ -1,9 +1,14 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/stefanpapp/investment-intelligence/chapter_2/backend/internal/model"
@@ -82,6 +87,51 @@ func (c *DataServiceClient) GetAlpacaOrders() ([]model.AlpacaOrder, error) {
 		return nil, fmt.Errorf("decode alpaca orders: %w", err)
 	}
 	return orders, nil
+}
+
+func (c *DataServiceClient) ExtractFile(filePath, fileType string) (*model.ExtractionResponse, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("open file for extraction: %w", err)
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", filepath.Base(filePath))
+	if err != nil {
+		return nil, fmt.Errorf("create form file: %w", err)
+	}
+	if _, err := io.Copy(part, file); err != nil {
+		return nil, fmt.Errorf("copy file to form: %w", err)
+	}
+	writer.Close()
+
+	extractClient := &http.Client{Timeout: 120 * time.Second}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/extract", c.baseURL), body)
+	if err != nil {
+		return nil, fmt.Errorf("create extract request: %w", err)
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	resp, err := extractClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("extract file: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, &DataServiceError{
+			StatusCode: resp.StatusCode,
+			Message:    fmt.Sprintf("data service returned %d for extract", resp.StatusCode),
+		}
+	}
+
+	var result model.ExtractionResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("decode extraction response: %w", err)
+	}
+	return &result, nil
 }
 
 func (c *DataServiceClient) GetPriceHistory(ticker, start, end string) (*model.HistoricalPriceResponse, error) {

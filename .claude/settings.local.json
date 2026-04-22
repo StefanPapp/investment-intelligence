@@ -52,7 +52,9 @@
       "Bash(unset DATABASE_URL)",
       "mcp__plugin_neon_neon__list_projects",
       "mcp__plugin_neon_neon__run_sql",
-      "WebSearch"
+      "WebSearch",
+      "Bash(docker-compose down:*)",
+      "Bash(docker-compose exec:*)"
     ]
   }
 }

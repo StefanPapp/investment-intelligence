@@ -138,6 +138,94 @@ export async function importAlpaca(): Promise<ImportResult> {
   return apiFetch<ImportResult>("/api/import/alpaca", { method: "POST" });
 }
 
+export interface StagingRow {
+  id: string;
+  import_id: string;
+  trade_date: string | null;
+  symbol: string | null;
+  side: string | null;
+  quantity: number | null;
+  price_per_share: number | null;
+  currency: string;
+  fees: number;
+  account: string | null;
+  source_row: string | null;
+  warnings: string[];
+  status: string;
+}
+
+export interface ImportDetail {
+  import: {
+    id: string;
+    filename: string;
+    file_type: string;
+    status: string;
+  };
+  rows: StagingRow[];
+}
+
+export interface ConfirmResult {
+  inserted: number;
+  duplicates: number;
+}
+
+export async function uploadFile(file: File): Promise<ImportDetail> {
+  // Materialize file bytes before creating the outgoing FormData.
+  // The File received from a server action's deserialized FormData may not
+  // stream correctly unless the bytes are read eagerly first.
+  const bytes = await file.arrayBuffer();
+  const blob = new Blob([bytes], {
+    type: file.type || "application/octet-stream",
+  });
+
+  const formData = new FormData();
+  formData.append("file", blob, file.name);
+
+  const res = await fetch(`${BACKEND_URL}/api/imports/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(error.error || res.statusText);
+  }
+  return res.json();
+}
+
+export async function getImport(importId: string): Promise<ImportDetail> {
+  return apiFetch<ImportDetail>(`/api/imports/${importId}`);
+}
+
+export async function patchStagingRow(
+  importId: string,
+  rowId: string,
+  updates: Partial<
+    Pick<
+      StagingRow,
+      "trade_date" | "symbol" | "side" | "quantity" | "price_per_share"
+    >
+  >,
+): Promise<void> {
+  const res = await fetch(
+    `${BACKEND_URL}/api/imports/${importId}/rows/${rowId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    },
+  );
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(error.error || res.statusText);
+  }
+}
+
+export async function confirmImport(importId: string): Promise<ConfirmResult> {
+  return apiFetch<ConfirmResult>(`/api/imports/${importId}/confirm`, {
+    method: "POST",
+  });
+}
+
 export async function getHistoricalPrices(
   ticker: string,
   start: string,
