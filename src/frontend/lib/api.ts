@@ -174,7 +174,9 @@ export async function uploadFile(file: File): Promise<ImportDetail> {
   // The File received from a server action's deserialized FormData may not
   // stream correctly unless the bytes are read eagerly first.
   const bytes = await file.arrayBuffer();
-  const blob = new Blob([bytes], { type: file.type || "application/octet-stream" });
+  const blob = new Blob([bytes], {
+    type: file.type || "application/octet-stream",
+  });
 
   const formData = new FormData();
   formData.append("file", blob, file.name);
