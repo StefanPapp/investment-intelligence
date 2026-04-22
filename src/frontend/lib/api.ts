@@ -170,13 +170,18 @@ export interface ConfirmResult {
 }
 
 export async function uploadFile(file: File): Promise<ImportDetail> {
+  // Materialize file bytes before creating the outgoing FormData.
+  // The File received from a server action's deserialized FormData may not
+  // stream correctly unless the bytes are read eagerly first.
+  const bytes = await file.arrayBuffer();
+  const blob = new Blob([bytes], { type: file.type || "application/octet-stream" });
+
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", blob, file.name);
 
   const res = await fetch(`${BACKEND_URL}/api/imports/upload`, {
     method: "POST",
     body: formData,
-    // Do NOT set Content-Type — browser sets it with boundary for multipart
   });
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: res.statusText }));
