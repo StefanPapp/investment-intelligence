@@ -1,16 +1,16 @@
---—
+---
 name: reviewer
-description: >
+description:
 Performs comprehensive code reviews combining code quality,
 security, and financial data integrity checks. Use when
 reviewing pull requests, new features, or any code that
 handles financial data.
 tools: Read, Grep, Glob
-Skills:
+skills:
 
 - correctness-review
 - readability-review
-- security-review|
+- security-review
 - tdd-review
 - data-integrity
 
